@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NZ 연료 감시 — 비축량 모니터</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0c0f;
+    --surface: #111419;
+    --surface2: #181c23;
+    --border: #1e2530;
+    --border2: #252d3a;
+    --text: #ffffff;
+    --text-dim: #cccccc;
+    --text-muted: #999999;
+    --accent: #00d4ff;
+    --accent-dim: rgba(0,212,255,0.12);
+    --green: #00e87a;
+    --green-dim: rgba(0,232,122,0.12);
+    --amber: #ffb800;
+    --amber-dim: rgba(255,184,0,0.12);
+    --red: #ff3d5a;
+    --red-dim: rgba(255,61,90,0.12);
+    --mono: 'Share Tech Mono', monospace;
+    --cond: 'Barlow Condensed', sans-serif;
+    --body: 'Noto Sans KR', sans-serif;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: #ffffff;
+    font-family: var(--body);
+    font-size: 14px;
+    line-height: 1.6;
+    min-height: 100vh;
+    word-break: keep-all;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.04) 2px,
+      rgba(0,0,0,0.04) 4px
+    );
+    pointer-events: none;
+    z-index: 1000;
+  }
+
+  /* ─── HEADER ─── */
+  header {
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    background: rgba(10,12,15,0.95);
+    backdrop-filter: blur(12px);
+    z-index: 100;
+  }
+
+  .logo {
+    font-family: var(--body);
+    font-weight: 900;
+    font-size: 18px;
+    letter-spacing: -0.02em;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .logo-dot {
+    width: 8px; height: 8px;
+    background: var(--green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse 2s infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 8px var(--green); }
+    50% { opacity: 0.5; box-shadow: 0 0 2px var(--green); }
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .header-meta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #ffffff;
+    text-align: right;
+  }
+
+  .header-meta span { color: #ffffff; }
+
+  .phase-badge {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    padding: 4px 10px;
+    border-radius: 2px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid rgba(0,232,122,0.25);
+    white-space: nowrap;
+  }
+
+  /* ─── ALERT BANNER ─── */
+  .alert-bar {
+    background: linear-gradient(90deg, rgba(0,232,122,0.06), rgba(0,232,122,0.02));
+    border-bottom: 1px solid rgba(0,232,122,0.15);
+    padding: 8px 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--body);
+    font-size: 11px;
+    color: var(--green);
+    overflow: hidden;
+  }
+
+  .alert-label {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    background: var(--green);
+    color: #000;
+    flex-shrink: 0;
+    border-radius: 1px;
+  }
+
+  .ticker-wrap { overflow: hidden; flex: 1; }
+  .ticker {
+    display: flex;
+    gap: 40px;
+    white-space: nowrap;
+    animation: ticker 35s linear infinite;
+  }
+  @keyframes ticker { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* ─── LAYOUT ─── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px;
+    display: grid;
+    gap: 20px;
+  }
+
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 20px; }
+  .grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 20px; }
+
+  /* ─── PANEL ─── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    animation: fadeUp 0.4s ease both;
+  }
+  .panel:nth-child(1) { animation-delay: 0.05s; }
+  .panel:nth-child(2) { animation-delay: 0.1s; }
+  .panel:nth-child(3) { animation-delay: 0.15s; }
+  .panel:nth-child(4) { animation-delay: 0.2s; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .panel-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(255,255,255,0.015);
+    gap: 8px;
+  }
+
+  .panel-title {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .panel-tag {
+    font-family: var(--mono);
+    font-size: 10px;
+    color: #aaaaaa;
+    white-space: nowrap;
+  }
+
+  .panel-body { padding: 16px; }
+
+  /* ─── STAT TILES ─── */
+  .stat-tile { padding: 20px 16px; }
+
+  .stat-label {
+    font-family: var(--body);
+    font-weight: 500;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  .stat-val {
+    font-family: var(--mono);
+    font-size: 42px;
+    line-height: 1;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+
+  .stat-val .unit {
+    font-size: 16px;
+    color: #ffffff;
+    margin-left: 4px;
+    font-family: var(--body);
+  }
+
+  .stat-sub {
+    font-family: var(--body);
+    font-size: 11px;
+    color: #ffffff;
+    margin-top: 6px;
+  }
+
+  .stat-sub .pos { color: var(--green); }
+  .stat-sub .neg { color: var(--red); }
+
+  /* ─── GAUGE BAR ─── */
+  .gauge-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 60px;
+    align-items: center;
+    gap: 10px;
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .gauge-row:last-child { border-bottom: none; }
+
+  .gauge-name {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 12px;
+    color: #ffffff;
+  }
+
+  .gauge-track {
+    height: 6px;
+    background: var(--border2);
+    border-radius: 1px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .gauge-fill {
+    height: 100%;
+    border-radius: 1px;
+    position: relative;
+  }
+
+  .gauge-fill::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3));
+  }
+
+  .gauge-threshold {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    width: 2px;
+    background: var(--red);
+    opacity: 1;
+    box-shadow: 0 0 4px var(--red);
+  }
+
+  .gauge-val {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: #fff;
+    text-align: right;
+  }
+  .gauge-val .days { font-size: 10px; color: #ffffff; font-family: var(--body); }
+
+  /* ─── TABLE ─── */
+  .cmp-table { width: 100%; border-collapse: collapse; }
+  .cmp-table th {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 10px;
+    letter-spacing: 0.04em;
+    color: #ffffff;
+    padding: 6px 10px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  .cmp-table th:not(:first-child) { text-align: right; }
+
+  .cmp-table td {
+    font-family: var(--mono);
+    font-size: 12px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--border);
+    color: #ffffff;
+  }
+  .cmp-table tr:last-child td { border-bottom: none; }
+  .cmp-table td:not(:first-child) { text-align: right; }
+  .cmp-table td:first-child {
+    font-family: var(--body);
+    font-weight: 700;
+    font-size: 12px;
+    color: #fff;
+  }
+  .cmp-table .hl { color: var(--accent); }
+  .cmp-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ─── VESSEL ─── */
+  .vessel-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto auto;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .vessel-row:last-child { border-bottom: none; }
+
+  .vessel-name {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--accent);
+  }
+
+  .vessel-cargo {
+    font-family: var(--body);
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 2px;
+    font-weight: 700;
+  }
+
+  .cargo-petrol { background: rgba(0,212,255,0.1); color: var(--accent); }
+  .cargo-diesel { background: rgba(255,184,0,0.1); color: var(--amber); }
+  .cargo-jet { background: rgba(0,232,122,0.1); color: var(--green); }
+  .cargo-multi { background: rgba(200,200,200,0.08); color: #aaa; }
+
+  .vessel-eta {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .vessel-days {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: #ffffff;
+  }
+
+  /* ─── IEA ─── */
+  .iea-panel {
+    border: 1px solid rgba(255,184,0,0.2);
+    background: linear-gradient(135deg, rgba(255,184,0,0.04), transparent);
+  }
+
+  /* ─── STATUS ─── */
+  .status-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+  .status-row:last-child { border-bottom: none; }
+
+  .status-key {
+    font-family: var(--body);
+    font-weight: 500;
+    font-size: 12px;
+    color: #ffffff;
+  }
+
+  .status-val {
+    font-family: var(--body);
+    font-size: 12px;
+    color: #ffffff;
+    white-space: nowrap;
+  }
+
+  .dot-green { color: var(--green); }
+  .dot-amber { color: var(--amber); }
+  .dot-red { color: var(--red); }
+
+  /* ─── MAP ─── */
+  .map-placeholder {
+    background: var(--surface2);
+    border: 1px dashed var(--border2);
+    height: 180px;
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    color: #aaaaaa;
+    font-family: var(--body);
+    font-size: 12px;
+    margin-top: 12px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .vessel-dot {
+    position: absolute;
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent);
+    animation: vesselPulse 2s infinite;
+  }
+  @keyframes vesselPulse {
+    0%, 100% { box-shadow: 0 0 4px var(--accent); }
+    50% { box-shadow: 0 0 12px var(--accent), 0 0 20px rgba(0,212,255,0.3); }
+  }
+
+  .map-nz {
+    font-family: var(--cond);
+    font-size: 28px;
+    font-weight: 900;
+    color: var(--border2);
+    letter-spacing: 0.1em;
+    position: absolute;
+    right: 24px;
+    bottom: 12px;
+  }
+
+  .map-route {
+    position: absolute;
+    width: 40%; height: 1px;
+    background: linear-gradient(90deg, transparent, var(--accent-dim), var(--accent));
+    top: 40%; left: 10%;
+    transform: rotate(-15deg);
+  }
+
+  .map-route-2 {
+    position: absolute;
+    width: 35%; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,184,0,0.3), var(--amber));
+    top: 60%; left: 5%;
+    transform: rotate(-8deg);
+  }
+
+  /* ─── SPARKLINE ─── */
+  .sparkline {
+    display: flex;
+    align-items: flex-end;
+    gap: 2px;
+    height: 28px;
+    margin-top: 8px;
+  }
+  .spark-bar {
+    flex: 1;
+    background: var(--accent-dim);
+    border-radius: 1px;
+  }
+  .spark-bar.last { background: var(--accent); }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--body);
+    font-size: 11px;
+    color: #aaaaaa;
+  }
+  footer a { color: #ffffff; text-decoration: none; }
+  footer a:hover { color: #ffffff; }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 900px) {
+    .grid-4 { grid-template-columns: 1fr 1fr; }
+    .grid-3 { grid-template-columns: 1fr 1fr; }
+    .grid-2 { grid-template-columns: 1fr; }
+    .phase-grid { grid-template-columns: 1fr 1fr !important; }
+  }
+  @media (max-width: 600px) {
+    .grid-4, .grid-3 { grid-template-columns: 1fr; }
+    .phase-grid { grid-template-columns: 1fr 1fr !important; }
+    header { padding: 0 16px; }
+    main { padding: 16px; }
+    .logo { font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    NZ 연료 감시
+  </div>
+  <div class="header-right">
+    <div class="header-meta">
+      MBIE 최종 업데이트<br>
+      <span>2026년 3월 15일 일요일 00:00 NZST</span>
+    </div>
+    <div class="phase-badge">● 단계 1 — 경미</div>
+  </div>
+</header>
+
+<!-- TICKER -->
+<div class="alert-bar">
+  <div class="alert-label">실시간</div>
+  <div class="ticker-wrap">
+    <div class="ticker">
+      <span>휘발유 국내재고: 28.1일분 ▲ 최소기준(28일) 초과</span>
+      <span>경유 국내재고: 22.7일분 ▲ 최소기준(21일) 초과</span>
+      <span>항공유 국내재고: 25.6일분 ▲ 최소기준(24일) 초과</span>
+      <span>해상재고 포함 총 비축량: 48.9일분</span>
+      <span>IEA 공동조치: 4억 배럴 방출 진행 중 — NZ 석유 티켓 의무 이행 중</span>
+      <span>입항 선박: 3월 16~22일 10척 | 3월 23~29일 1척</span>
+      <span>휘발유 국내재고: 28.1일분 ▲ 최소기준(28일) 초과</span>
+      <span>경유 국내재고: 22.7일분 ▲ 최소기준(21일) 초과</span>
+      <span>항공유 국내재고: 25.6일분 ▲ 최소기준(24일) 초과</span>
+      <span>해상재고 포함 총 비축량: 48.9일분</span>
+      <span>IEA 공동조치: 4억 배럴 방출 진행 중 — NZ 석유 티켓 의무 이행 중</span>
+      <span>입항 선박: 3월 16~22일 10척 | 3월 23~29일 1척</span>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- ROW 0: National Fuel Plan phases -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">국가 연료 계획 (National Fuel Plan) — 대응 단계</span>
+      <span class="panel-tag">MBIE · 출처 Civil Defence</span>
+    </div>
+    <div class="panel-body" style="padding: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+
+      <div style="border: 1px solid var(--green); border-radius: 4px; padding: 14px; background: var(--green-dim); position: relative;">
+        <div style="position:absolute; top:-1px; left:-1px; right:-1px; height:3px; background:var(--green); border-radius:4px 4px 0 0;"></div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="font-family:var(--mono); font-size:22px; color:var(--green); line-height:1;">1</div>
+          <div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--green);">경미 (Minor)</div>
+            <div style="font-family:var(--body); font-size:10px; color:var(--green); opacity:0.8;">● 현재 단계</div>
+          </div>
+        </div>
+        <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
+          정상 또는 단기 공급 충격 상황. 연료 기업이 상업적 수단으로 자체 대응. 정부는 글로벌 상황을 모니터링하고 위험을 파악합니다.
+        </div>
+      </div>
+
+      <div style="border: 1px solid var(--border); border-radius: 4px; padding: 14px; background: var(--surface2); position: relative; opacity: 0.6;">
+        <div style="position:absolute; top:-1px; left:-1px; right:-1px; height:3px; background:var(--amber); border-radius:4px 4px 0 0;"></div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="font-family:var(--mono); font-size:22px; color:var(--amber); line-height:1;">2</div>
+          <div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--amber);">보통 (Moderate)</div>
+          </div>
+        </div>
+        <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
+          공급 차질이 지속될 경우 정부 개입 시작. 연료섹터조정기구(FSCE)가 가동되어 업계와 정부 간 실시간 정보 공유 및 조율.
+        </div>
+      </div>
+
+      <div style="border: 1px solid var(--border); border-radius: 4px; padding: 14px; background: var(--surface2); position: relative; opacity: 0.6;">
+        <div style="position:absolute; top:-1px; left:-1px; right:-1px; height:3px; background: #ff7700; border-radius:4px 4px 0 0;"></div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="font-family:var(--mono); font-size:22px; color:#ff7700; line-height:1;">3</div>
+          <div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:#ff7700;">심각 (Major)</div>
+          </div>
+        </div>
+        <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
+          공급 경로 재조정 지원, 대체 공급처 확보, 지역 간 연료 균형 배분, 수요 감소 조치 시행. 필수 서비스 우선 공급 검토.
+        </div>
+      </div>
+
+      <div style="border: 1px solid var(--border); border-radius: 4px; padding: 14px; background: var(--surface2); position: relative; opacity: 0.6;">
+        <div style="position:absolute; top:-1px; left:-1px; right:-1px; height:3px; background:var(--red); border-radius:4px 4px 0 0;"></div>
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <div style="font-family:var(--mono); font-size:22px; color:var(--red); line-height:1;">4</div>
+          <div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--red);">극심 (Severe)</div>
+          </div>
+        </div>
+        <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
+          심각한 공급 부족 발생. 의료·응급·식품·물류·전력 등 필수 서비스에 연료 우선 배분. 자발적 수요 감축 권고 (재택근무, 카풀 등).
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ROW 1: 3 fuel types -->
+  <div class="grid-3">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">휘발유</span>
+        <span class="panel-tag">최소 28일</span>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">총 가용 일수</div>
+        <div class="stat-val">51.3<span class="unit">일</span></div>
+        <div class="stat-sub">국내: <span style="color:var(--green);">28.1일</span> &nbsp;|&nbsp; 해상: <span style="color:var(--accent);">23.3일</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">경유</span>
+        <span class="panel-tag">최소 21일</span>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">총 가용 일수</div>
+        <div class="stat-val">47.1<span class="unit">일</span></div>
+        <div class="stat-sub">국내: <span style="color:var(--green);">22.7일</span> &nbsp;|&nbsp; 해상: <span style="color:var(--accent);">24.3일</span></div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">항공유</span>
+        <span class="panel-tag">최소 24일</span>
+      </div>
+      <div class="stat-tile">
+        <div class="stat-label">총 가용 일수</div>
+        <div class="stat-val">49.0<span class="unit">일</span></div>
+        <div class="stat-sub">국내: <span style="color:var(--green);">25.6일</span> &nbsp;|&nbsp; 해상: <span style="color:var(--accent);">23.4일</span></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 1b: 총 비축량 -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">총 비축량 (전체 합산)</span>
+      <span class="panel-tag">국내 + 해상 · 2026.3.15</span>
+    </div>
+    <div class="stat-tile" style="display:grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0;">
+      <div style="padding: 20px 24px; border-right: 1px solid var(--border);">
+        <div class="stat-label">국내재고</div>
+        <div class="stat-val" style="color:var(--green);">25.1<span class="unit">일</span></div>
+        <div class="stat-sub">휘발유 28.1 &nbsp;|&nbsp; 경유 22.7 &nbsp;|&nbsp; 항공유 25.6</div>
+      </div>
+      <div style="padding: 20px 24px;">
+        <div class="stat-label">해상재고 포함 총합</div>
+        <div class="stat-val">48.9<span class="unit">일</span></div>
+        <div class="stat-sub">해상: <span style="color:var(--accent);">23.8일</span> &nbsp;|&nbsp; <span class="sparkline" id="spark-combined" style="display:inline-flex; height:16px; margin:0; vertical-align:middle; width:60px;"></span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2: Gauge + Table -->
+  <div class="grid-2">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">국내재고 vs 최소의무 비교</span>
+        <span class="panel-tag">MBIE · 2026.3.15</span>
+      </div>
+      <div class="panel-body">
+        <div>
+
+          <div class="gauge-row">
+            <div class="gauge-name">휘발유</div>
+            <div class="gauge-track">
+              <div class="gauge-fill" style="width:55%; background: linear-gradient(90deg, var(--amber), #ffdd00);"></div>
+              <div class="gauge-threshold" style="left: 46.7%;"></div>
+            </div>
+            <div class="gauge-val">28.1 <span class="days">일</span></div>
+          </div>
+
+          <div class="gauge-row">
+            <div class="gauge-name">경유</div>
+            <div class="gauge-track">
+              <div class="gauge-fill" style="width:37.8%; background: linear-gradient(90deg, var(--amber), #ffdd00);"></div>
+              <div class="gauge-threshold" style="left: 35%;"></div>
+            </div>
+            <div class="gauge-val">22.7 <span class="days">일</span></div>
+          </div>
+
+          <div class="gauge-row">
+            <div class="gauge-name">항공유</div>
+            <div class="gauge-track">
+              <div class="gauge-fill" style="width:42.7%; background: linear-gradient(90deg, var(--amber), #ffdd00);"></div>
+              <div class="gauge-threshold" style="left: 40%;"></div>
+            </div>
+            <div class="gauge-val">25.6 <span class="days">일</span></div>
+          </div>
+
+        </div>
+
+        <div style="margin-top:14px; padding-top:12px; border-top: 1px solid var(--border); font-family: var(--body); font-size:10px; color:#aaaaaa;">
+          <span style="color:var(--amber);">■</span> 국내재고 &nbsp;|&nbsp; <span style="color:var(--red);">─</span> 최소 의무 기준선 &nbsp;|&nbsp; 막대는 국내재고만 표시
+        </div>
+
+        <div style="margin-top:16px;">
+          <div class="status-row">
+            <span class="status-key">최소의무비축제도</span>
+            <span class="status-val dot-green">● 2025.1.1 시행</span>
+          </div>
+          <div class="status-row">
+            <span class="status-key">국가연료계획 단계</span>
+            <span class="status-val dot-green">● 단계 1 — 경미</span>
+          </div>
+          <div class="status-row">
+            <span class="status-key">공급 차질</span>
+            <span class="status-val dot-green">● 없음 — 정상 운영</span>
+          </div>
+          <div class="status-row">
+            <span class="status-key">IEA 공동조치</span>
+            <span class="status-val dot-amber">● 진행 중 (4억 배럴)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">전체 비축량 상세</span>
+        <span class="panel-tag">가용 일수 기준 · 2026.3.15</span>
+      </div>
+      <div class="panel-body" style="padding:0;">
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th>구분</th>
+              <th>휘발유</th>
+              <th>경유</th>
+              <th>항공유</th>
+              <th>합계</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="color:var(--green);">국내재고</td>
+              <td style="color:var(--green);">28.1</td>
+              <td style="color:var(--green);">22.7</td>
+              <td style="color:var(--green);">25.6</td>
+              <td style="color:var(--green);">25.1</td>
+            </tr>
+            <tr>
+              <td style="color:var(--accent);">해상재고</td>
+              <td style="color:var(--accent);">23.3</td>
+              <td style="color:var(--accent);">24.3</td>
+              <td style="color:var(--accent);">23.4</td>
+              <td style="color:var(--accent);">23.8</td>
+            </tr>
+            <tr style="background: rgba(0,212,255,0.04);">
+              <td style="color:var(--accent);">NZ 총 비축량</td>
+              <td class="hl">51.3</td>
+              <td class="hl">47.1</td>
+              <td class="hl">49.0</td>
+              <td class="hl">48.9</td>
+            </tr>
+            <tr>
+              <td style="color:var(--amber); font-size:11px;">최소 의무 기준</td>
+              <td style="color:var(--amber); font-size:11px;">28</td>
+              <td style="color:var(--amber); font-size:11px;">21</td>
+              <td style="color:var(--amber); font-size:11px;">24</td>
+              <td style="color:var(--amber); font-size:11px;">—</td>
+            </tr>
+            <tr>
+              <td style="color:var(--green); font-size:11px;">기준 초과분</td>
+              <td style="color:var(--green); font-size:11px;">+0.1</td>
+              <td style="color:var(--green); font-size:11px;">+1.7</td>
+              <td style="color:var(--green); font-size:11px;">+1.6</td>
+              <td style="color:var(--green); font-size:11px;">—</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding:12px 10px; border-top: 1px solid var(--border);">
+          <div style="font-family:var(--body); font-weight:700; font-size:11px; color:#ffffff; margin-bottom:8px;">향후 2주 입항 예정 선박</div>
+          <table class="cmp-table">
+            <thead>
+              <tr>
+                <th>입항 기간</th>
+                <th>선박 수</th>
+                <th>휘발유</th>
+                <th>경유</th>
+                <th>항공유</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="font-size:11px;">3월 16~22일</td>
+                <td style="color:var(--accent);">10척</td>
+                <td>22일분</td>
+                <td>14일분</td>
+                <td>13일분</td>
+              </tr>
+              <tr>
+                <td style="font-size:11px;">3월 23~29일</td>
+                <td style="color:var(--accent);">1척</td>
+                <td>6일분</td>
+                <td style="color:#aaaaaa;">—</td>
+                <td style="color:#aaaaaa;">—</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 3: Vessel + IEA -->
+  <div class="grid-2">
+
+    <div class="panel">
+      <div class="panel-header">
+        <span class="panel-title">에너지 원자재 가격</span>
+        <span class="panel-tag">Trading Economics · 2025.11.14 기준</span>
+      </div>
+      <div class="panel-body" style="padding:0;">
+        <table class="cmp-table">
+          <thead>
+            <tr>
+              <th>원자재</th>
+              <th>현재가</th>
+              <th>변동</th>
+              <th>변동률</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>WTI 원유 <span style="font-size:10px; color:#999;">(USD/bbl)</span></td>
+              <td style="font-family:var(--mono);">59.95</td>
+              <td style="font-family:var(--mono); color:var(--green);">+1.26</td>
+              <td style="color:var(--green);">+2.15%</td>
+            </tr>
+            <tr>
+              <td>브렌트유 <span style="font-size:10px; color:#999;">(USD/bbl)</span></td>
+              <td style="font-family:var(--mono);">64.26</td>
+              <td style="font-family:var(--mono); color:var(--green);">+1.25</td>
+              <td style="color:var(--green);">+1.98%</td>
+            </tr>
+            <tr>
+              <td>천연가스 <span style="font-size:10px; color:#999;">(USD/MMBtu)</span></td>
+              <td style="font-family:var(--mono);">4.509</td>
+              <td style="font-family:var(--mono); color:var(--red);">-0.14</td>
+              <td style="color:var(--red);">-2.95%</td>
+            </tr>
+            <tr>
+              <td>가솔린 <span style="font-size:10px; color:#999;">(USD/gal)</span></td>
+              <td style="font-family:var(--mono);">2.004</td>
+              <td style="font-family:var(--mono); color:var(--green);">+0.04</td>
+              <td style="color:var(--green);">+1.89%</td>
+            </tr>
+            <tr>
+              <td>난방유 <span style="font-size:10px; color:#999;">(USD/gal)</span></td>
+              <td style="font-family:var(--mono);">2.533</td>
+              <td style="font-family:var(--mono); color:var(--green);">+0.07</td>
+              <td style="color:var(--green);">+2.75%</td>
+            </tr>
+            <tr>
+              <td>TTF 가스 <span style="font-size:10px; color:#999;">(EUR/MWh)</span></td>
+              <td style="font-family:var(--mono);">31.07</td>
+              <td style="font-family:var(--mono); color:var(--green);">+0.61</td>
+              <td style="color:var(--green);">+2.01%</td>
+            </tr>
+            <tr>
+              <td>석탄 <span style="font-size:10px; color:#999;">(USD/t)</span></td>
+              <td style="font-family:var(--mono);">109.55</td>
+              <td style="font-family:var(--mono); color:var(--green);">+0.05</td>
+              <td style="color:var(--green);">+0.05%</td>
+            </tr>
+          </tbody>
+        </table>
+        <div style="padding:10px 16px; border-top:1px solid var(--border); font-family:var(--body); font-size:10px; color:#999; line-height:1.7;">
+          출처: <a href="https://tradingeconomics.com/commodity/crude-oil" target="_blank" style="color:#cccccc;">Trading Economics</a> · 데이터는 정적 스냅샷입니다 (2025.11.14)
+        </div>
+      </div>
+    </div>
+
+    <div class="panel iea-panel">
+      <div class="panel-header">
+        <span class="panel-title">IEA 공동조치</span>
+        <span class="panel-tag">시행 중 · 2026.3.11</span>
+      </div>
+      <div class="panel-body">
+
+        <div style="margin-bottom:16px;">
+          <div class="stat-label">방출 배럴</div>
+          <div class="stat-val" style="color:var(--amber);">4억<span class="unit">배럴</span></div>
+          <div class="stat-sub">글로벌 원유 안정화를 위한 IEA 회원국 공조</div>
+        </div>
+
+        <div class="status-row">
+          <span class="status-key">발동일</span>
+          <span class="status-val">2026년 3월 11일</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">발동 원인</span>
+          <span class="status-val">중동 분쟁</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">기대 효과</span>
+          <span class="status-val">정제소 원유 접근 완화</span>
+        </div>
+        <div class="status-row">
+          <span class="status-key">NZ 의무 이행</span>
+          <span class="status-val dot-amber">● 석유 티켓 방출</span>
+        </div>
+
+        <div style="margin-top:16px; padding:12px; background:var(--green-dim); border:1px solid rgba(0,232,122,0.15); border-radius:2px; font-family:var(--body); font-size:11px; color:var(--green); line-height:1.6;">
+          ✓ 현재 NZ 연료 공급은 안정적이며 비축량은 최소 기준을 상회하고 있습니다.
+        </div>
+
+        <div style="margin-top:10px; font-family:var(--body); font-size:10px; color:#aaaaaa; line-height:1.7;">
+          출처: MBIE — Middle East conflict and New Zealand's fuel stocks
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ROW 4: Assessment -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">현황 평가 및 주요 모니터링 포인트</span>
+      <span class="panel-tag">AI 종합 분석 · 2026.3.20 업데이트</span>
+    </div>
+    <div class="panel-body" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;">
+
+      <div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--green); margin-bottom:8px; letter-spacing:0.04em;">▶ 단기 현황 (현재)</div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;">
+          비축량은 최소 기준을 충분히 상회하고 있습니다. 구매 습관을 변경할 필요가 없습니다.
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px; letter-spacing:0.04em;">⚠ 모니터링 포인트 (3월 23~29일)</div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;">
+          3월 23~29일 기간에는 휘발유 전용 선박 1척만 확정되어 있습니다. 추가 화물이 없을 경우 3월 말 경유 및 항공유 공급에 차질이 생길 수 있습니다.
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px; letter-spacing:0.04em;">ℹ 글로벌 맥락</div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;">
+          중동 분쟁으로 글로벌 연료 시장에 압력이 가해지고 있으나, NZ 공급망은 현재 안정적입니다. IEA 4억 배럴 방출로 원유 수급 완화가 기대됩니다.
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>
+    <a href="https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-generation-and-markets/liquid-fuel-market/fuel-supply-disruption-response/middle-east-conflict-and-new-zealands-fuel-stocks" target="_blank">MBIE 원본 ↗</a>
+    &nbsp;·&nbsp;
+    &nbsp;·&nbsp; v1.0 초안
+  </div>
+</footer>
+
+<script>
+// Sparkline
+(function() {
+  const container = document.getElementById('spark-combined');
+  if (!container) return;
+  const data = [52, 49, 53, 51, 48, 50, 47, 49, 48.9];
+  const max = Math.max(...data);
+  data.forEach((v, i) => {
+    const bar = document.createElement('div');
+    bar.className = 'spark-bar' + (i === data.length - 1 ? ' last' : '');
+    bar.style.height = (v / max * 100) + '%';
+    container.appendChild(bar);
+  });
+})();
+
+</script>
+</body>
+</html>
