@@ -968,8 +968,51 @@
   <div class="panel">
     <div class="panel-header">
       <span class="panel-title">현황 평가 및 주요 모니터링 포인트</span>
-<script>
-// Sparkline
+      <span class="panel-tag">MBIE 기반 · 2026.3.20</span>
+    </div>
+    <div class="panel-body" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;">
+      <div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--green); margin-bottom:8px;">▶ 단기 현황 (현재)</div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;">비축량은 최소 기준을 충분히 상회하고 있습니다. 구매 습관을 변경할 필요가 없습니다.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px;">⚠ 모니터링 포인트 (3월 23~29일)</div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;">3월 23~29일 기간에는 휘발유 전용 선박 1척만 확정되어 있습니다. 추가 화물이 없을 경우 3월 말 경유 및 항공유 공급에 차질이 생길 수 있습니다.</div>
+      </div>
+      <div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px;">ℹ 글로벌 맥락</div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;">중동 분쟁으로 글로벌 연료 시장에 압력이 가해지고 있으나, NZ 공급망은 현재 안정적입니다. IEA 4억 배럴 방출로 원유 수급 완화가 기대됩니다.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Gaspy iframe -->
+  <div class="panel">
+    <div class="panel-header">
+      <span class="panel-title">NZ 주유소 실시간 가격</span>
+      <span class="panel-tag">Gaspy · gaspy.nz/stats.html</span>
+    </div>
+    <div style="padding:0; overflow:hidden; border-radius:0 0 4px 4px;">
+      <iframe
+        src="https://www.gaspy.nz/stats.html"
+        style="width:100%; height:600px; border:none; display:block; background:#fff;"
+        loading="lazy"
+        title="Gaspy NZ Fuel Prices"
+      ></iframe>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <div>NZ 연료 감시 · 정부 공식 사이트 아님 · 데이터 출처: MBIE, Yahoo Finance, IEA</div>
+  <div>
+    <a href="https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-generation-and-markets/liquid-fuel-market/fuel-supply-disruption-response/middle-east-conflict-and-new-zealands-fuel-stocks" target="_blank">MBIE 원본 ↗</a>
+    &nbsp;·&nbsp; v1.0 초안
+  </div>
+</footer>
+
+<script>// Sparkline
 (function() {
   const container = document.getElementById('spark-combined');
   if (!container) return;
@@ -1053,7 +1096,7 @@ async function fetchChartData(ticker, tf) {
 }
 
 function drawMiniChart(container, data, c) {
-  const W = 280, H = 110, pL = 46, pR = 8, pT = 8, pB = 22;
+  const W = 280, H = 120, pL = 46, pR = 8, pT = 8, pB = 28;
   const cW = W - pL - pR, cH = H - pT - pB;
   const prices = data.map(d => d.price);
   const minP = Math.min(...prices), maxP = Math.max(...prices);
@@ -1067,12 +1110,12 @@ function drawMiniChart(container, data, c) {
 
   // y ticks
   const yTicks = [0,1,2].map(i => ({ val: yMin + (yMax-yMin)*(i/2), y: toY(yMin + (yMax-yMin)*(i/2)) }));
-  // x ticks
-  const xIdxs = [...new Set([0, Math.floor((data.length-1)/2), data.length-1])];
 
   const pts = data.map((d,i) => `${toX(i).toFixed(1)},${toY(d.price).toFixed(1)}`).join(' ');
   const tid = `tt-${c.ticker.replace('=','')}`;
   const sid = `sv-${c.ticker.replace('=','')}`;
+  const cid = `ch-${c.ticker.replace('=','')}`;  // crosshair line id
+  const did = `cd-${c.ticker.replace('=','')}`;  // crosshair dot id
   const gid = `g-${c.ticker.replace('=','')}`;
 
   container.innerHTML = `
@@ -1096,38 +1139,79 @@ function drawMiniChart(container, data, c) {
               <stop offset="100%" stop-color="${c.color}" stop-opacity="0"/>
             </linearGradient>
           </defs>
+
+          <!-- y grid + labels -->
           ${yTicks.map(t=>`
             <line x1="${pL}" y1="${t.y.toFixed(1)}" x2="${W-pR}" y2="${t.y.toFixed(1)}" stroke="#1e2530" stroke-width="1"/>
             <text x="${pL-3}" y="${(t.y+3).toFixed(1)}" text-anchor="end" font-size="8" fill="#666" font-family="Share Tech Mono">${t.val.toFixed(c.decimals<=2?0:1)}</text>
           `).join('')}
-          ${xIdxs.map(i=>`
-            <text x="${toX(i).toFixed(1)}" y="${(pT+cH+14).toFixed(1)}" text-anchor="middle" font-size="8" fill="#666" font-family="Noto Sans KR">
-              ${new Date(data[i].ts*1000).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}
+
+          <!-- x vertical grid lines + every date label -->
+          ${data.map((d,i)=>`
+            <line x1="${toX(i).toFixed(1)}" y1="${pT}" x2="${toX(i).toFixed(1)}" y2="${(pT+cH).toFixed(1)}" stroke="#1e2530" stroke-width="1"/>
+            <text x="${toX(i).toFixed(1)}" y="${(pT+cH+14).toFixed(1)}" text-anchor="middle" font-size="7" fill="#555" font-family="Noto Sans KR">
+              ${new Date(d.ts*1000).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}
             </text>
           `).join('')}
+
+          <!-- area + line -->
           <polygon points="${toX(0).toFixed(1)},${(pT+cH).toFixed(1)} ${pts} ${toX(data.length-1).toFixed(1)},${(pT+cH).toFixed(1)}" fill="url(#${gid})"/>
           <polyline points="${pts}" fill="none" stroke="${c.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-          <circle cx="${toX(data.length-1).toFixed(1)}" cy="${toY(latest).toFixed(1)}" r="3" fill="${c.color}" stroke="#181c23" stroke-width="1.5"/>
+
+          <!-- dots for each data point -->
           ${data.map((d,i)=>`
-            <rect x="${(toX(i)-cW/data.length/2).toFixed(1)}" y="${pT}" width="${(cW/data.length).toFixed(1)}" height="${cH}"
+            <circle cx="${toX(i).toFixed(1)}" cy="${toY(d.price).toFixed(1)}" r="2.5" fill="${c.color}" stroke="#181c23" stroke-width="1"/>
+          `).join('')}
+
+          <!-- crosshair vertical line (hidden by default) -->
+          <line id="${cid}" x1="0" y1="${pT}" x2="0" y2="${(pT+cH).toFixed(1)}" stroke="#ffffff" stroke-width="1" stroke-dasharray="3,2" opacity="0" pointer-events="none"/>
+          <!-- crosshair dot (hidden by default) -->
+          <circle id="${did}" cx="0" cy="0" r="4" fill="#fff" stroke="${c.color}" stroke-width="2" opacity="0" pointer-events="none"/>
+
+          <!-- wide invisible hover rects per data point -->
+          ${data.map((d,i)=>`
+            <rect
+              x="${(toX(i) - (i===0 ? 0 : (toX(i)-toX(i-1))/2)).toFixed(1)}"
+              y="${pT}"
+              width="${(i===0 ? (toX(1)-toX(0))/2 : i===data.length-1 ? (toX(i)-toX(i-1))/2 : (toX(i)-toX(i-1))).toFixed(1)}"
+              height="${cH}"
               fill="transparent" class="mh"
+              data-i="${i}"
               data-p="${d.price.toFixed(c.decimals)}"
+              data-x="${toX(i).toFixed(1)}"
+              data-y="${toY(d.price).toFixed(1)}"
               data-d="${new Date(d.ts*1000).toLocaleDateString('ko-KR',{month:'short',day:'numeric'})}"/>
           `).join('')}
         </svg>
-        <div id="${tid}" style="display:none;position:absolute;background:#111419;border:1px solid #252d3a;border-radius:3px;padding:4px 8px;font-size:10px;color:#fff;pointer-events:none;white-space:nowrap;z-index:10;top:4px;"></div>
+        <div id="${tid}" style="display:none;position:absolute;background:#111419;border:1px solid #252d3a;border-radius:3px;padding:5px 10px;font-size:11px;color:#fff;pointer-events:none;white-space:nowrap;z-index:10;top:4px;font-family:'Share Tech Mono',monospace;"></div>
       </div>
     </div>`;
 
   const svgEl = document.getElementById(sid);
   const ttEl  = document.getElementById(tid);
+  const chEl  = document.getElementById(cid);
+  const cdEl  = document.getElementById(did);
+
   svgEl.querySelectorAll('.mh').forEach(r => {
-    r.addEventListener('mouseenter', () => { ttEl.textContent = `${r.dataset.d}  $${r.dataset.p}`; ttEl.style.display='block'; });
+    r.addEventListener('mouseenter', () => {
+      ttEl.textContent = `${r.dataset.d}  $${r.dataset.p}`;
+      ttEl.style.display = 'block';
+      // show crosshair
+      chEl.setAttribute('x1', r.dataset.x); chEl.setAttribute('x2', r.dataset.x);
+      chEl.setAttribute('opacity', '0.5');
+      cdEl.setAttribute('cx', r.dataset.x); cdEl.setAttribute('cy', r.dataset.y);
+      cdEl.setAttribute('opacity', '1');
+    });
     r.addEventListener('mousemove', e => {
       const b = svgEl.getBoundingClientRect();
-      ttEl.style.left = (e.clientX-b.left > b.width/2 ? e.clientX-b.left-ttEl.offsetWidth-6 : e.clientX-b.left+6)+'px';
+      const tx = e.clientX - b.left;
+      ttEl.style.left = (tx > b.width / 2 ? tx - ttEl.offsetWidth - 8 : tx + 8) + 'px';
     });
-    r.addEventListener('mouseleave', () => { ttEl.style.display='none'; });
+    r.addEventListener('mouseleave', () => {
+      ttEl.style.display = 'none';
+      chEl.setAttribute('opacity', '0');
+      cdEl.setAttribute('opacity', '0');
+    });
   });
 }
 
