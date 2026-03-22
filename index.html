@@ -1058,7 +1058,7 @@
   try {
     const results = await Promise.all(commodities.map(c => fetchPrice(c.ticker)));
     const tbody = document.getElementById('commodityBody');
-    const now = new Date().toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    const now = new Date().toLocaleString('en-NZ',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
     document.getElementById('commodityTag').textContent = `Yahoo Finance · ${now} 기준`;
     tbody.innerHTML = commodities.map((c, i) => {
       const { latest, prev } = results[i];
@@ -1159,7 +1159,7 @@ function drawMiniChart(container, data, c) {
           ${data.map((d,i)=>`
             <line x1="${toX(i).toFixed(1)}" y1="${pT}" x2="${toX(i).toFixed(1)}" y2="${(pT+cH).toFixed(1)}" stroke="#1e2530" stroke-width="1"/>
             <text x="${toX(i).toFixed(1)}" y="${(pT+cH+14).toFixed(1)}" text-anchor="middle" font-size="7" fill="#555" font-family="Noto Sans KR">
-              ${new Date(d.ts*1000).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}
+              ${new Date(d.ts*1000).toLocaleDateString('en-NZ',{month:'short',day:'numeric'})}
             </text>
           `).join('')}
 
@@ -1189,7 +1189,7 @@ function drawMiniChart(container, data, c) {
               data-p="${d.price.toFixed(c.decimals)}"
               data-x="${toX(i).toFixed(1)}"
               data-y="${toY(d.price).toFixed(1)}"
-              data-d="${new Date(d.ts*1000).toLocaleDateString('ko-KR',{month:'short',day:'numeric'})}"/>
+              data-d="${new Date(d.ts*1000).toLocaleDateString('en-NZ',{month:'short',day:'numeric'})}"/>
           `).join('')}
         </svg>
         <div id="${tid}" style="display:none;position:absolute;background:#111419;border:1px solid #252d3a;border-radius:3px;padding:5px 10px;font-size:11px;color:#fff;pointer-events:none;white-space:nowrap;z-index:10;top:4px;font-family:'Share Tech Mono',monospace;"></div>
@@ -1239,7 +1239,7 @@ async function loadChart(tf) {
 
   try {
     const allData = await Promise.all(CHART_COMMODITIES.map(c => fetchChartData(c.ticker, tf)));
-    const now = new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const now = new Date().toLocaleString('en-NZ',{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});
     const tagEl = document.getElementById('chartTag');
     if (tagEl) tagEl.textContent = `Yahoo Finance · ${TF_CONFIG[tf].label} · ${now}`;
 
