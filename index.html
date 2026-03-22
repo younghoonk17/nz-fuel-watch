@@ -991,7 +991,7 @@
     { ticker: 'HO=F',  name: '난방유',     unit: 'USD/gal',    decimals: 3 },
   ];
 
-  const BASE = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+  const BASE = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
 
   async function fetchPrice(ticker) {
     const url = `${BASE}${encodeURIComponent(ticker)}?interval=1d&range=5d`;
