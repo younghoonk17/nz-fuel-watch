@@ -948,70 +948,26 @@
     </div>
     <div class="panel-body" style="padding: 16px;">
 
-      <!-- timeframe buttons + legend -->
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px; flex-wrap:wrap; gap:10px;">
-        <div style="display:flex; gap:6px;" id="legendBox"></div>
-        <div style="display:flex; gap:4px;">
-          <button onclick="loadChart('1wk')"  id="btn-1wk"  class="tf-btn active">1주</button>
-          <button onclick="loadChart('4wk')"  id="btn-4wk"  class="tf-btn">4주</button>
-          <button onclick="loadChart('3mo')"  id="btn-3mo"  class="tf-btn">3개월</button>
-        </div>
+      <!-- timeframe buttons -->
+      <div style="display:flex; justify-content:flex-end; margin-bottom:14px; gap:4px;">
+        <button onclick="loadChart('1wk')" id="btn-1wk" class="tf-btn active">1주</button>
+        <button onclick="loadChart('4wk')" id="btn-4wk" class="tf-btn">4주</button>
+        <button onclick="loadChart('3mo')" id="btn-3mo" class="tf-btn">3개월</button>
       </div>
 
-      <!-- chart -->
-      <div style="position:relative;">
-        <svg id="energyChart" viewBox="0 0 700 220" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:220px; overflow:visible;">
-          <text x="350" y="115" text-anchor="middle" font-size="12" fill="#555" font-family="'Noto Sans KR'">데이터 로딩 중...</text>
-        </svg>
-        <div id="chartTooltip" style="display:none; position:absolute; background:#181c23; border:1px solid #252d3a; border-radius:3px; padding:8px 12px; font-size:11px; color:#fff; pointer-events:none; white-space:nowrap; z-index:10;"></div>
+      <!-- 5 mini charts grid -->
+      <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;" id="miniChartsGrid">
+        <!-- populated by JS -->
       </div>
 
-      <div style="margin-top:8px; font-family:var(--body); font-size:10px; color:#999;">
-        출처: Yahoo Finance · 각 종목은 첫 데이터포인트 기준 정규화 (%) · hover로 가격 확인
+      <div style="margin-top:12px; font-family:var(--body); font-size:10px; color:#999;">
+        출처: Yahoo Finance · hover로 가격 확인
       </div>
     </div>
   </div>
   <div class="panel">
     <div class="panel-header">
       <span class="panel-title">현황 평가 및 주요 모니터링 포인트</span>
-      <span class="panel-tag">AI 종합 분석 · 2026.3.20 업데이트</span>
-    </div>
-    <div class="panel-body" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;">
-
-      <div>
-        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--green); margin-bottom:8px; letter-spacing:0.04em;">▶ 단기 현황 (현재)</div>
-        <div style="font-size:13px; line-height:1.8; color:#ffffff;">
-          비축량은 최소 기준을 충분히 상회하고 있습니다. 구매 습관을 변경할 필요가 없습니다.
-        </div>
-      </div>
-
-      <div>
-        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px; letter-spacing:0.04em;">⚠ 모니터링 포인트 (3월 23~29일)</div>
-        <div style="font-size:13px; line-height:1.8; color:#ffffff;">
-          3월 23~29일 기간에는 휘발유 전용 선박 1척만 확정되어 있습니다. 추가 화물이 없을 경우 3월 말 경유 및 항공유 공급에 차질이 생길 수 있습니다.
-        </div>
-      </div>
-
-      <div>
-        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px; letter-spacing:0.04em;">ℹ 글로벌 맥락</div>
-        <div style="font-size:13px; line-height:1.8; color:#ffffff;">
-          중동 분쟁으로 글로벌 연료 시장에 압력이 가해지고 있으나, NZ 공급망은 현재 안정적입니다. IEA 4억 배럴 방출로 원유 수급 완화가 기대됩니다.
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-</main>
-
-<footer>
-  <div>
-    <a href="https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-generation-and-markets/liquid-fuel-market/fuel-supply-disruption-response/middle-east-conflict-and-new-zealands-fuel-stocks" target="_blank">MBIE 원본 ↗</a>
-    &nbsp;·&nbsp;
-    &nbsp;·&nbsp; v1.0 초안
-  </div>
-</footer>
-
 <script>
 // Sparkline
 (function() {
@@ -1026,266 +982,183 @@
     container.appendChild(bar);
   });
 })();
-// Energy price chart
-const CHART_COMMODITIES = [
-  { ticker: 'CL=F', name: 'WTI 원유',  color: '#ffb800' },
-  { ticker: 'BZ=F', name: '브렌트유',  color: '#00d4ff' },
-  { ticker: 'NG=F', name: '천연가스',  color: '#00e87a' },
-  { ticker: 'RB=F', name: '가솔린',    color: '#ff7700' },
-  { ticker: 'HO=F', name: '난방유',    color: '#ff3d5a' },
-];
 
-const PROXY = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
+// ── Yahoo Finance commodity TABLE ──
+(async function() {
+  const commodities = [
+    { ticker: 'CL=F', name: 'WTI 원유',  unit: 'USD/bbl',   decimals: 2 },
+    { ticker: 'BZ=F', name: '브렌트유',  unit: 'USD/bbl',   decimals: 2 },
+    { ticker: 'NG=F', name: '천연가스',  unit: 'USD/MMBtu', decimals: 3 },
+    { ticker: 'RB=F', name: '가솔린',    unit: 'USD/gal',   decimals: 3 },
+    { ticker: 'HO=F', name: '난방유',    unit: 'USD/gal',   decimals: 3 },
+  ];
+  const BASE = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
+
+  async function fetchPrice(ticker) {
+    const url = `${BASE}${encodeURIComponent(ticker)}?interval=1d&range=5d`;
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`${ticker} ${res.status}`);
+    const json = await res.json();
+    const closes = json.chart.result[0].indicators.quote[0].close.filter(v => v != null);
+    return { latest: closes[closes.length - 1], prev: closes[closes.length - 2] };
+  }
+
+  try {
+    const results = await Promise.all(commodities.map(c => fetchPrice(c.ticker)));
+    const tbody = document.getElementById('commodityBody');
+    const now = new Date().toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('commodityTag').textContent = `Yahoo Finance · ${now} 기준`;
+    tbody.innerHTML = commodities.map((c, i) => {
+      const { latest, prev } = results[i];
+      const chg = latest - prev;
+      const chgPct = (chg / prev) * 100;
+      const up = chg >= 0;
+      const color = up ? 'var(--green)' : 'var(--red)';
+      const sign = up ? '+' : '';
+      return `<tr>
+        <td>${c.name} <span style="font-size:10px;color:#999;">(${c.unit})</span></td>
+        <td style="font-family:var(--mono);">${latest.toFixed(c.decimals)}</td>
+        <td style="font-family:var(--mono);color:${color};">${sign}${chg.toFixed(c.decimals)}</td>
+        <td style="color:${color};">${sign}${chgPct.toFixed(2)}%</td>
+      </tr>`;
+    }).join('');
+  } catch(e) {
+    document.getElementById('commodityBody').innerHTML = `<tr><td colspan="4" style="text-align:center;padding:16px;color:#999;font-size:11px;">로딩 실패: ${e.message}</td></tr>`;
+  }
+})();
+
+// ── Yahoo Finance energy CHARTS ──
+const CHART_COMMODITIES = [
+  { ticker: 'CL=F', name: 'WTI 원유',  unit: 'USD/bbl',   color: '#ffb800', decimals: 2 },
+  { ticker: 'BZ=F', name: '브렌트유',  unit: 'USD/bbl',   color: '#00d4ff', decimals: 2 },
+  { ticker: 'NG=F', name: '천연가스',  unit: 'USD/MMBtu', color: '#00e87a', decimals: 3 },
+  { ticker: 'RB=F', name: '가솔린',    unit: 'USD/gal',   color: '#ff7700', decimals: 3 },
+  { ticker: 'HO=F', name: '난방유',    unit: 'USD/gal',   color: '#ff3d5a', decimals: 3 },
+];
+const CHART_PROXY = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
 const TF_CONFIG = {
   '1wk': { range: '5d',  interval: '1d',  label: '1주' },
   '4wk': { range: '1mo', interval: '1d',  label: '4주' },
   '3mo': { range: '3mo', interval: '1wk', label: '3개월' },
 };
 
-let currentTF = '1wk';
-let chartData = {};
-
 async function fetchChartData(ticker, tf) {
   const { range, interval } = TF_CONFIG[tf];
-  const url = `${PROXY}${encodeURIComponent(ticker)}?interval=${interval}&range=${range}`;
+  const url = `${CHART_PROXY}${encodeURIComponent(ticker)}?interval=${interval}&range=${range}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`${ticker} ${res.status}`);
   const json = await res.json();
   const result = json.chart.result[0];
-  const timestamps = result.timestamp;
-  const closes = result.indicators.quote[0].close;
-  return timestamps.map((ts, i) => ({ ts, price: closes[i] })).filter(d => d.price != null);
+  return result.timestamp.map((ts, i) => ({ ts, price: result.indicators.quote[0].close[i] })).filter(d => d.price != null);
 }
 
-function drawEnergyChart(allData) {
-  const svg = document.getElementById('energyChart');
-  const tooltip = document.getElementById('chartTooltip');
-  if (!svg) return;
-
-  const W = 700, H = 190, padL = 48, padR = 12, padT = 10, padB = 30;
-  const cW = W - padL - padR;
-  const cH = H - padT - padB;
-
-  // normalize each series to % change from first point
-  const series = CHART_COMMODITIES.map((c, ci) => {
-    const data = allData[ci];
-    if (!data || data.length === 0) return null;
-    const base = data[0].price;
-    return {
-      ...c,
-      points: data.map(d => ({ ts: d.ts, pct: ((d.price - base) / base) * 100, price: d.price }))
-    };
-  }).filter(Boolean);
-
-  if (series.length === 0) return;
-
-  // x domain: min/max timestamp across all series
-  const allTs = series.flatMap(s => s.points.map(p => p.ts));
-  const minTs = Math.min(...allTs), maxTs = Math.max(...allTs);
-
-  // y domain
-  const allPct = series.flatMap(s => s.points.map(p => p.pct));
-  const minPct = Math.min(...allPct), maxPct = Math.max(...allPct);
-  const pctRange = (maxPct - minPct) || 1;
-  const yMin = minPct - pctRange * 0.08;
-  const yMax = maxPct + pctRange * 0.08;
-
-  const toX = ts => padL + ((ts - minTs) / (maxTs - minTs || 1)) * cW;
-  const toY = pct => padT + cH - ((pct - yMin) / (yMax - yMin)) * cH;
+function drawMiniChart(container, data, c) {
+  const W = 280, H = 110, pL = 46, pR = 8, pT = 8, pB = 22;
+  const cW = W - pL - pR, cH = H - pT - pB;
+  const prices = data.map(d => d.price);
+  const minP = Math.min(...prices), maxP = Math.max(...prices);
+  const yMin = minP - (maxP - minP) * 0.1, yMax = maxP + (maxP - minP) * 0.1 || minP + 1;
+  const toX = i => pL + (i / (data.length - 1 || 1)) * cW;
+  const toY = p => pT + cH - ((p - yMin) / (yMax - yMin)) * cH;
+  const latest = prices[prices.length - 1];
+  const chg = latest - prices[0];
+  const chgPct = (chg / prices[0]) * 100;
+  const up = chg >= 0;
 
   // y ticks
-  const yTicks = [];
-  for (let i = 0; i <= 4; i++) {
-    const val = yMin + (yMax - yMin) * (i / 4);
-    yTicks.push({ val, y: toY(val) });
-  }
+  const yTicks = [0,1,2].map(i => ({ val: yMin + (yMax-yMin)*(i/2), y: toY(yMin + (yMax-yMin)*(i/2)) }));
+  // x ticks
+  const xIdxs = [...new Set([0, Math.floor((data.length-1)/2), data.length-1])];
 
-  // x ticks — pick ~5 evenly spaced timestamps
-  const allTsSorted = [...new Set(allTs)].sort((a, b) => a - b);
-  const step = Math.max(1, Math.floor(allTsSorted.length / 5));
-  const xTicks = allTsSorted.filter((_, i) => i % step === 0 || i === allTsSorted.length - 1);
+  const pts = data.map((d,i) => `${toX(i).toFixed(1)},${toY(d.price).toFixed(1)}`).join(' ');
+  const tid = `tt-${c.ticker.replace('=','')}`;
+  const sid = `sv-${c.ticker.replace('=','')}`;
+  const gid = `g-${c.ticker.replace('=','')}`;
 
-  // zero line y
-  const zeroY = toY(0);
+  container.innerHTML = `
+    <div style="border:1px solid var(--border);border-radius:4px;background:var(--surface2);padding:10px 12px 0;position:relative;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;">
+        <div>
+          <div style="font-family:var(--body);font-weight:700;font-size:11px;color:${c.color};">${c.name}</div>
+          <div style="font-family:var(--mono);font-size:18px;color:#fff;line-height:1.2;">${latest.toFixed(c.decimals)}</div>
+          <div style="font-family:var(--body);font-size:9px;color:#999;">${c.unit}</div>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-family:var(--mono);font-size:11px;color:${up?'#00e87a':'#ff3d5a'};">${up?'▲':'▼'} ${up?'+':''}${chgPct.toFixed(2)}%</div>
+          <div style="font-family:var(--mono);font-size:10px;color:#999;">${up?'+':''}${chg.toFixed(c.decimals)}</div>
+        </div>
+      </div>
+      <div style="position:relative;">
+        <svg id="${sid}" viewBox="0 0 ${W} ${H}" style="width:100%;height:${H}px;overflow:visible;display:block;">
+          <defs>
+            <linearGradient id="${gid}" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="${c.color}" stop-opacity="0.2"/>
+              <stop offset="100%" stop-color="${c.color}" stop-opacity="0"/>
+            </linearGradient>
+          </defs>
+          ${yTicks.map(t=>`
+            <line x1="${pL}" y1="${t.y.toFixed(1)}" x2="${W-pR}" y2="${t.y.toFixed(1)}" stroke="#1e2530" stroke-width="1"/>
+            <text x="${pL-3}" y="${(t.y+3).toFixed(1)}" text-anchor="end" font-size="8" fill="#666" font-family="Share Tech Mono">${t.val.toFixed(c.decimals<=2?0:1)}</text>
+          `).join('')}
+          ${xIdxs.map(i=>`
+            <text x="${toX(i).toFixed(1)}" y="${(pT+cH+14).toFixed(1)}" text-anchor="middle" font-size="8" fill="#666" font-family="Noto Sans KR">
+              ${new Date(data[i].ts*1000).toLocaleDateString('ko-KR',{month:'numeric',day:'numeric'})}
+            </text>
+          `).join('')}
+          <polygon points="${toX(0).toFixed(1)},${(pT+cH).toFixed(1)} ${pts} ${toX(data.length-1).toFixed(1)},${(pT+cH).toFixed(1)}" fill="url(#${gid})"/>
+          <polyline points="${pts}" fill="none" stroke="${c.color}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="${toX(data.length-1).toFixed(1)}" cy="${toY(latest).toFixed(1)}" r="3" fill="${c.color}" stroke="#181c23" stroke-width="1.5"/>
+          ${data.map((d,i)=>`
+            <rect x="${(toX(i)-cW/data.length/2).toFixed(1)}" y="${pT}" width="${(cW/data.length).toFixed(1)}" height="${cH}"
+              fill="transparent" class="mh"
+              data-p="${d.price.toFixed(c.decimals)}"
+              data-d="${new Date(d.ts*1000).toLocaleDateString('ko-KR',{month:'short',day:'numeric'})}"/>
+          `).join('')}
+        </svg>
+        <div id="${tid}" style="display:none;position:absolute;background:#111419;border:1px solid #252d3a;border-radius:3px;padding:4px 8px;font-size:10px;color:#fff;pointer-events:none;white-space:nowrap;z-index:10;top:4px;"></div>
+      </div>
+    </div>`;
 
-  svg.innerHTML = `
-    <defs>
-      ${series.map((s, i) => `
-        <linearGradient id="grad${i}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="${s.color}" stop-opacity="0.15"/>
-          <stop offset="100%" stop-color="${s.color}" stop-opacity="0"/>
-        </linearGradient>
-      `).join('')}
-    </defs>
-
-    <!-- grid lines -->
-    ${yTicks.map(t => `
-      <line x1="${padL}" y1="${t.y.toFixed(1)}" x2="${W - padR}" y2="${t.y.toFixed(1)}" stroke="#1e2530" stroke-width="1"/>
-      <text x="${padL - 4}" y="${(t.y + 3).toFixed(1)}" text-anchor="end" font-size="9" fill="#999" font-family="'Share Tech Mono'">${t.val >= 0 ? '+' : ''}${t.val.toFixed(1)}%</text>
-    `).join('')}
-
-    <!-- zero line -->
-    <line x1="${padL}" y1="${zeroY.toFixed(1)}" x2="${W - padR}" y2="${zeroY.toFixed(1)}" stroke="#333" stroke-width="1" stroke-dasharray="3,3"/>
-
-    <!-- x labels -->
-    ${xTicks.map(ts => `
-      <text x="${toX(ts).toFixed(1)}" y="${(padT + cH + 16).toFixed(1)}" text-anchor="middle" font-size="8" fill="#999" font-family="'Noto Sans KR'">
-        ${new Date(ts * 1000).toLocaleDateString('ko-KR', { month: 'numeric', day: 'numeric' })}
-      </text>
-    `).join('')}
-
-    <!-- area + lines -->
-    ${series.map((s, i) => {
-      const pts = s.points.map(p => `${toX(p.ts).toFixed(1)},${toY(p.pct).toFixed(1)}`).join(' ');
-      const first = `${toX(s.points[0].ts).toFixed(1)},${(padT + cH).toFixed(1)}`;
-      const last  = `${toX(s.points[s.points.length-1].ts).toFixed(1)},${(padT + cH).toFixed(1)}`;
-      return `
-        <polygon points="${first} ${pts} ${last}" fill="url(#grad${i})"/>
-        <polyline points="${pts}" fill="none" stroke="${s.color}" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"/>
-        <circle cx="${toX(s.points[s.points.length-1].ts).toFixed(1)}" cy="${toY(s.points[s.points.length-1].pct).toFixed(1)}" r="3" fill="${s.color}" stroke="#0a0c0f" stroke-width="1"/>
-      `;
-    }).join('')}
-
-    <!-- invisible hover overlay per x position -->
-    ${allTsSorted.filter((_, i) => i % step === 0 || true).map(ts => `
-      <line x1="${toX(ts).toFixed(1)}" y1="${padT}" x2="${toX(ts).toFixed(1)}" y2="${padT + cH}"
-        stroke="transparent" stroke-width="12"
-        class="chart-hover"
-        data-ts="${ts}"
-        data-prices="${series.map(s => { const p = s.points.find(pp => pp.ts === ts) || s.points.reduce((a, b) => Math.abs(b.ts - ts) < Math.abs(a.ts - ts) ? b : a); return p.price.toFixed(3) + '|' + p.pct.toFixed(2); }).join(',')}"
-        data-x="${toX(ts).toFixed(1)}"
-      />
-    `).join('')}
-  `;
-
-  // hover interactions
-  svg.querySelectorAll('.chart-hover').forEach(el => {
-    el.addEventListener('mouseenter', e => {
-      const date = new Date(+el.dataset.ts * 1000).toLocaleDateString('ko-KR', { month: 'short', day: 'numeric' });
-      const priceData = el.dataset.prices.split(',');
-      tooltip.innerHTML = `<div style="font-weight:700; margin-bottom:4px; color:#ccc;">${date}</div>` +
-        series.map((s, i) => {
-          const [price, pct] = priceData[i].split('|');
-          const up = parseFloat(pct) >= 0;
-          return `<div style="display:flex; gap:10px; justify-content:space-between;">
-            <span style="color:${s.color};">● ${s.name}</span>
-            <span style="font-family:var(--mono);">$${price} <span style="color:${up ? '#00e87a' : '#ff3d5a'}">${up ? '+' : ''}${pct}%</span></span>
-          </div>`;
-        }).join('');
-      tooltip.style.display = 'block';
+  const svgEl = document.getElementById(sid);
+  const ttEl  = document.getElementById(tid);
+  svgEl.querySelectorAll('.mh').forEach(r => {
+    r.addEventListener('mouseenter', () => { ttEl.textContent = `${r.dataset.d}  $${r.dataset.p}`; ttEl.style.display='block'; });
+    r.addEventListener('mousemove', e => {
+      const b = svgEl.getBoundingClientRect();
+      ttEl.style.left = (e.clientX-b.left > b.width/2 ? e.clientX-b.left-ttEl.offsetWidth-6 : e.clientX-b.left+6)+'px';
     });
-    el.addEventListener('mousemove', e => {
-      const box = svg.parentElement.getBoundingClientRect();
-      const tx = e.clientX - box.left;
-      tooltip.style.left = (tx > box.width / 2 ? tx - 10 - tooltip.offsetWidth : tx + 10) + 'px';
-      tooltip.style.top  = (e.clientY - box.top - 20) + 'px';
-    });
-    el.addEventListener('mouseleave', () => { tooltip.style.display = 'none'; });
+    r.addEventListener('mouseleave', () => { ttEl.style.display='none'; });
   });
 }
 
 async function loadChart(tf) {
-  currentTF = tf;
-  // update button states
   document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-  const activeBtn = document.getElementById(`btn-${tf}`);
-  if (activeBtn) activeBtn.classList.add('active');
+  const btn = document.getElementById(`btn-${tf}`);
+  if (btn) btn.classList.add('active');
+  const grid = document.getElementById('miniChartsGrid');
+  if (!grid) return;
 
-  const svg = document.getElementById('energyChart');
-  if (svg) svg.innerHTML = `<text x="350" y="115" text-anchor="middle" font-size="12" fill="#555" font-family="'Noto Sans KR'">로딩 중...</text>`;
+  grid.innerHTML = CHART_COMMODITIES.map(c =>
+    `<div style="border:1px solid var(--border);border-radius:4px;background:var(--surface2);height:165px;display:flex;align-items:center;justify-content:center;">
+      <span style="font-size:11px;color:#555;">${c.name} 로딩 중...</span>
+    </div>`
+  ).join('') + '<div></div>';
 
   try {
     const allData = await Promise.all(CHART_COMMODITIES.map(c => fetchChartData(c.ticker, tf)));
-    chartData[tf] = allData;
+    const now = new Date().toLocaleString('ko-KR',{month:'numeric',day:'numeric',hour:'2-digit',minute:'2-digit'});
+    const tagEl = document.getElementById('chartTag');
+    if (tagEl) tagEl.textContent = `Yahoo Finance · ${TF_CONFIG[tf].label} · ${now}`;
 
-    // update tag
-    const now = new Date().toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    const el = document.getElementById('chartTag');
-    if (el) el.textContent = `Yahoo Finance · ${TF_CONFIG[tf].label} · ${now}`;
-
-    // draw legend
-    const legendBox = document.getElementById('legendBox');
-    if (legendBox && legendBox.children.length === 0) {
-      legendBox.innerHTML = CHART_COMMODITIES.map(c =>
-        `<span style="font-family:var(--body); font-size:10px; color:${c.color}; display:flex; align-items:center; gap:4px;">
-          <span style="width:14px; height:2px; background:${c.color}; display:inline-block; border-radius:1px;"></span>${c.name}
-        </span>`
-      ).join('');
-    }
-
-    drawEnergyChart(allData);
+    grid.innerHTML = CHART_COMMODITIES.map(()=>'<div></div>').join('') + '<div></div>';
+    const cells = grid.querySelectorAll('div');
+    CHART_COMMODITIES.forEach((c, i) => drawMiniChart(cells[i], allData[i], c));
   } catch(e) {
-    console.error('[Chart] 로딩 실패:', e);
-    if (svg) svg.innerHTML = `<text x="350" y="115" text-anchor="middle" font-size="11" fill="#ff3d5a" font-family="'Noto Sans KR'">로딩 실패: ${e.message}</text>`;
+    grid.innerHTML = `<div style="padding:20px;color:#ff3d5a;font-size:11px;">로딩 실패: ${e.message}</div>`;
   }
 }
 
-// init chart on page load
 loadChart('1wk');
-
-(async function() {
-  const commodities = [
-    { ticker: 'CL=F',  name: 'WTI 원유',  unit: 'USD/bbl',    decimals: 2 },
-    { ticker: 'BZ=F',  name: '브렌트유',   unit: 'USD/bbl',    decimals: 2 },
-    { ticker: 'NG=F',  name: '천연가스',   unit: 'USD/MMBtu',  decimals: 3 },
-    { ticker: 'RB=F',  name: '가솔린',     unit: 'USD/gal',    decimals: 3 },
-    { ticker: 'HO=F',  name: '난방유',     unit: 'USD/gal',    decimals: 3 },
-  ];
-
-  const BASE = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
-
-  async function fetchPrice(ticker) {
-    const url = `${BASE}${encodeURIComponent(ticker)}?interval=1d&range=5d`;
-    console.log(`[YF] 요청 시작: ${ticker}`, url);
-    const res = await fetch(url);
-    console.log(`[YF] 응답 받음: ${ticker} → status ${res.status} ${res.statusText}`);
-    if (!res.ok) throw new Error(`${ticker} fetch failed: ${res.status}`);
-    const json = await res.json();
-    console.log(`[YF] JSON 파싱 완료: ${ticker}`, json.chart?.result?.[0]?.meta);
-    const result = json.chart.result[0];
-    const closes = result.indicators.quote[0].close.filter(v => v != null);
-    const latest = closes[closes.length - 1];
-    const prev   = closes[closes.length - 2];
-    console.log(`[YF] 가격 추출: ${ticker} → latest=${latest}, prev=${prev}`);
-    return { latest, prev };
-  }
-
-  try {
-    console.log('[YF] 전체 fetch 시작:', commodities.map(c => c.ticker));
-    const results = await Promise.all(commodities.map(c => fetchPrice(c.ticker)));
-    console.log('[YF] 전체 fetch 완료 ✅', results);
-    const tbody = document.getElementById('commodityBody');
-    const now = new Date().toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-    document.getElementById('commodityTag').textContent = `Yahoo Finance · ${now} 기준`;
-
-    tbody.innerHTML = commodities.map((c, i) => {
-      const { latest, prev } = results[i];
-      const chg    = latest - prev;
-      const chgPct = (chg / prev) * 100;
-      const up     = chg >= 0;
-      const color  = up ? 'var(--green)' : 'var(--red)';
-      const sign   = up ? '+' : '';
-      return `
-        <tr>
-          <td>${c.name} <span style="font-size:10px; color:#999;">(${c.unit})</span></td>
-          <td style="font-family:var(--mono);">${latest.toFixed(c.decimals)}</td>
-          <td style="font-family:var(--mono); color:${color};">${sign}${chg.toFixed(c.decimals)}</td>
-          <td style="color:${color};">${sign}${chgPct.toFixed(2)}%</td>
-        </tr>`;
-    }).join('');
-
-  } catch(e) {
-    console.error('[YF] fetch 실패 ❌', e);
-    console.error('[YF] 실패 원인:', e.message);
-    document.getElementById('commodityBody').innerHTML = `
-      <tr><td colspan="4" style="text-align:center; padding:16px; color:#999; font-family:var(--body); font-size:11px;">
-        로딩 실패 — 브라우저에서 직접 파일을 열어주세요<br>
-        <span style="font-size:10px; color:#666;">${e.message}</span>
-      </td></tr>`;
-    console.error('Yahoo Finance commodity fetch error:', e);
-  }
-})();
-
 </script>
 </body>
 </html>
