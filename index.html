@@ -859,10 +859,10 @@
     <div class="panel">
       <div class="panel-header">
         <span class="panel-title">에너지 원자재 가격</span>
-        <span class="panel-tag">Trading Economics · 2025.11.14 기준</span>
+        <span class="panel-tag" id="commodityTag">Yahoo Finance · 로딩 중...</span>
       </div>
       <div class="panel-body" style="padding:0;">
-        <table class="cmp-table">
+        <table class="cmp-table" id="commodityTable">
           <thead>
             <tr>
               <th>원자재</th>
@@ -871,53 +871,14 @@
               <th>변동률</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody id="commodityBody">
             <tr>
-              <td>WTI 원유 <span style="font-size:10px; color:#999;">(USD/bbl)</span></td>
-              <td style="font-family:var(--mono);">59.95</td>
-              <td style="font-family:var(--mono); color:var(--green);">+1.26</td>
-              <td style="color:var(--green);">+2.15%</td>
-            </tr>
-            <tr>
-              <td>브렌트유 <span style="font-size:10px; color:#999;">(USD/bbl)</span></td>
-              <td style="font-family:var(--mono);">64.26</td>
-              <td style="font-family:var(--mono); color:var(--green);">+1.25</td>
-              <td style="color:var(--green);">+1.98%</td>
-            </tr>
-            <tr>
-              <td>천연가스 <span style="font-size:10px; color:#999;">(USD/MMBtu)</span></td>
-              <td style="font-family:var(--mono);">4.509</td>
-              <td style="font-family:var(--mono); color:var(--red);">-0.14</td>
-              <td style="color:var(--red);">-2.95%</td>
-            </tr>
-            <tr>
-              <td>가솔린 <span style="font-size:10px; color:#999;">(USD/gal)</span></td>
-              <td style="font-family:var(--mono);">2.004</td>
-              <td style="font-family:var(--mono); color:var(--green);">+0.04</td>
-              <td style="color:var(--green);">+1.89%</td>
-            </tr>
-            <tr>
-              <td>난방유 <span style="font-size:10px; color:#999;">(USD/gal)</span></td>
-              <td style="font-family:var(--mono);">2.533</td>
-              <td style="font-family:var(--mono); color:var(--green);">+0.07</td>
-              <td style="color:var(--green);">+2.75%</td>
-            </tr>
-            <tr>
-              <td>TTF 가스 <span style="font-size:10px; color:#999;">(EUR/MWh)</span></td>
-              <td style="font-family:var(--mono);">31.07</td>
-              <td style="font-family:var(--mono); color:var(--green);">+0.61</td>
-              <td style="color:var(--green);">+2.01%</td>
-            </tr>
-            <tr>
-              <td>석탄 <span style="font-size:10px; color:#999;">(USD/t)</span></td>
-              <td style="font-family:var(--mono);">109.55</td>
-              <td style="font-family:var(--mono); color:var(--green);">+0.05</td>
-              <td style="color:var(--green);">+0.05%</td>
+              <td colspan="4" style="text-align:center; padding:20px; color:#999; font-family:var(--body);">데이터 로딩 중...</td>
             </tr>
           </tbody>
         </table>
         <div style="padding:10px 16px; border-top:1px solid var(--border); font-family:var(--body); font-size:10px; color:#999; line-height:1.7;">
-          출처: <a href="https://tradingeconomics.com/commodity/crude-oil" target="_blank" style="color:#cccccc;">Trading Economics</a> · 데이터는 정적 스냅샷입니다 (2025.11.14)
+          출처: <a href="https://finance.yahoo.com" target="_blank" style="color:#cccccc;">Yahoo Finance</a> · 브라우저에서 실시간 fetch
         </div>
       </div>
     </div>
@@ -1020,7 +981,69 @@
     container.appendChild(bar);
   });
 })();
+// Yahoo Finance commodity prices
+(async function() {
+  const commodities = [
+    { ticker: 'CL=F',  name: 'WTI 원유',  unit: 'USD/bbl',    decimals: 2 },
+    { ticker: 'BZ=F',  name: '브렌트유',   unit: 'USD/bbl',    decimals: 2 },
+    { ticker: 'NG=F',  name: '천연가스',   unit: 'USD/MMBtu',  decimals: 3 },
+    { ticker: 'RB=F',  name: '가솔린',     unit: 'USD/gal',    decimals: 3 },
+    { ticker: 'HO=F',  name: '난방유',     unit: 'USD/gal',    decimals: 3 },
+  ];
 
-</script>
+  const BASE = 'https://query1.finance.yahoo.com/v8/finance/chart/';
+
+  async function fetchPrice(ticker) {
+    const url = `${BASE}${encodeURIComponent(ticker)}?interval=1d&range=5d`;
+    console.log(`[YF] 요청 시작: ${ticker}`, url);
+    const res = await fetch(url);
+    console.log(`[YF] 응답 받음: ${ticker} → status ${res.status} ${res.statusText}`);
+    if (!res.ok) throw new Error(`${ticker} fetch failed: ${res.status}`);
+    const json = await res.json();
+    console.log(`[YF] JSON 파싱 완료: ${ticker}`, json.chart?.result?.[0]?.meta);
+    const result = json.chart.result[0];
+    const closes = result.indicators.quote[0].close.filter(v => v != null);
+    const latest = closes[closes.length - 1];
+    const prev   = closes[closes.length - 2];
+    console.log(`[YF] 가격 추출: ${ticker} → latest=${latest}, prev=${prev}`);
+    return { latest, prev };
+  }
+
+  try {
+    console.log('[YF] 전체 fetch 시작:', commodities.map(c => c.ticker));
+    const results = await Promise.all(commodities.map(c => fetchPrice(c.ticker)));
+    console.log('[YF] 전체 fetch 완료 ✅', results);
+    const tbody = document.getElementById('commodityBody');
+    const now = new Date().toLocaleString('ko-KR', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+    document.getElementById('commodityTag').textContent = `Yahoo Finance · ${now} 기준`;
+
+    tbody.innerHTML = commodities.map((c, i) => {
+      const { latest, prev } = results[i];
+      const chg    = latest - prev;
+      const chgPct = (chg / prev) * 100;
+      const up     = chg >= 0;
+      const color  = up ? 'var(--green)' : 'var(--red)';
+      const sign   = up ? '+' : '';
+      return `
+        <tr>
+          <td>${c.name} <span style="font-size:10px; color:#999;">(${c.unit})</span></td>
+          <td style="font-family:var(--mono);">${latest.toFixed(c.decimals)}</td>
+          <td style="font-family:var(--mono); color:${color};">${sign}${chg.toFixed(c.decimals)}</td>
+          <td style="color:${color};">${sign}${chgPct.toFixed(2)}%</td>
+        </tr>`;
+    }).join('');
+
+  } catch(e) {
+    console.error('[YF] fetch 실패 ❌', e);
+    console.error('[YF] 실패 원인:', e.message);
+    document.getElementById('commodityBody').innerHTML = `
+      <tr><td colspan="4" style="text-align:center; padding:16px; color:#999; font-family:var(--body); font-size:11px;">
+        로딩 실패 — 브라우저에서 직접 파일을 열어주세요<br>
+        <span style="font-size:10px; color:#666;">${e.message}</span>
+      </td></tr>`;
+    console.error('Yahoo Finance commodity fetch error:', e);
+  }
+})();
+
 </body>
 </html>
