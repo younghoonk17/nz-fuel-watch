@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NZ 연료 감시 — 비축량 모니터</title>
+<title>NZ Fuel Watch — Reserve Monitor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Noto+Sans+KR:wght@300;400;500;700;900&family=Barlow+Condensed:wght@300;400;600;700;900&display=swap" rel="stylesheet">
 <style>
@@ -134,7 +134,7 @@
     gap: 12px;
     font-family: var(--body);
     font-size: 11px;
-    color: var(--green);
+    color: #ffffff;
     overflow: hidden;
   }
 
@@ -554,28 +554,36 @@
 <header>
   <div class="logo">
     <div class="logo-dot"></div>
-    NZ 연료 감시
+    NZ Fuel Watch
   </div>
   <div class="header-right">
+    <button id="langToggle" onclick="toggleLang()" style="
+      font-family: var(--body); font-weight: 700; font-size: 11px;
+      padding: 4px 12px; border-radius: 2px; cursor: pointer;
+      border: 1px solid var(--border2); background: var(--surface2);
+      color: #cccccc; transition: all 0.15s; letter-spacing: 0.04em;
+    " onmouseover="this.style.borderColor='#cccccc'" onmouseout="this.style.borderColor='var(--border2)'">
+      한국어
+    </button>
     <div class="header-meta">
-      MBIE 최종 업데이트<br>
-      <span>2026년 3월 15일 일요일 00:00 NZST</span>
+      MBIE Last Updated<br>
+      <span>Sun 15 Mar 2026, 00:00 NZST</span>
     </div>
-    <div class="phase-badge">● 단계 1 — 경미</div>
+    <div class="phase-badge">● Phase 1 — Minor</div>
   </div>
 </header>
 
 <!-- TICKER -->
 <div class="alert-bar">
-  <div class="alert-label">실시간</div>
+  <div class="alert-label"><span data-t="t-live" data-ko="실시간" data-en="LIVE">LIVE</span></div>
   <div class="ticker-wrap">
     <div class="ticker">
-      <span>휘발유 국내재고: 28.1일분 ▲ 최소기준(28일) 초과</span>
-      <span>경유 국내재고: 22.7일분 ▲ 최소기준(21일) 초과</span>
-      <span>항공유 국내재고: 25.6일분 ▲ 최소기준(24일) 초과</span>
-      <span>해상재고 포함 총 비축량: 48.9일분</span>
-      <span>IEA 공동조치: 4억 배럴 방출 진행 중 — NZ 석유 티켓 의무 이행 중</span>
-      <span>입항 선박: 3월 16~22일 10척 | 3월 23~29일 1척</span>
+      <span><span data-t="t-tk1" data-ko="휘발유 국내재고: 28.1일분 ▲ 최소기준(28일) 초과" data-en="Petrol in-country: 28.1 days ▲ above minimum (28d)">Petrol in-country: 28.1 days ▲ above minimum (28d)</span></span>
+      <span><span data-t="t-tk2" data-ko="경유 국내재고: 22.7일분 ▲ 최소기준(21일) 초과" data-en="Diesel in-country: 22.7 days ▲ above minimum (21d)">Diesel in-country: 22.7 days ▲ above minimum (21d)</span></span>
+      <span><span data-t="t-tk3" data-ko="항공유 국내재고: 25.6일분 ▲ 최소기준(24일) 초과" data-en="Jet fuel in-country: 25.6 days ▲ above minimum (24d)">Jet fuel in-country: 25.6 days ▲ above minimum (24d)</span></span>
+      <span><span data-t="t-tk4" data-ko="해상재고 포함 총 비축량: 48.9일분" data-en="Total stock incl. on-water: 48.9 days">Total stock incl. on-water: 48.9 days</span></span>
+      <span><span data-t="t-tk5" data-ko="IEA 공동조치: 4억 배럴 방출 진행 중 — NZ 석유 티켓 의무 이행 중" data-en="IEA collective action: 400M bbl release underway — NZ fulfilling oil ticket obligations">IEA collective action: 400M bbl release underway — NZ fulfilling oil ticket obligations</span></span>
+      <span><span data-t="t-tk6" data-ko="입항 선박: 16–22 Mar 10척 | 23–29 Mar 1척" data-en="Incoming vessels: 10 ships 16–22 Mar | 1 ship 23–29 Mar">Incoming vessels: 10 ships 16–22 Mar | 1 ship 23–29 Mar</span></span>
       <span>휘발유 국내재고: 28.1일분 ▲ 최소기준(28일) 초과</span>
       <span>경유 국내재고: 22.7일분 ▲ 최소기준(21일) 초과</span>
       <span>항공유 국내재고: 25.6일분 ▲ 최소기준(24일) 초과</span>
@@ -592,8 +600,8 @@
   <!-- ROW 0: National Fuel Plan phases -->
   <div class="panel">
     <div class="panel-header">
-      <span class="panel-title">국가 연료 계획 (National Fuel Plan) — 대응 단계</span>
-      <span class="panel-tag">MBIE · 출처 Civil Defence</span>
+      <span class="panel-title"><span data-t="t-phases-title" data-ko="국가 연료 계획 (National Fuel Plan) — 대응 단계" data-en="National Fuel Plan — Response Phases">National Fuel Plan — Response Phases</span></span>
+      <span class="panel-tag">MBIE · Source: Civil Defence</span>
     </div>
     <div class="panel-body" style="padding: 16px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;" id="phaseGrid">
 
@@ -602,12 +610,12 @@
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
           <div style="font-family:var(--mono); font-size:22px; color:var(--green); line-height:1;">1</div>
           <div>
-            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--green);">경미 (Minor)</div>
-            <div style="font-family:var(--body); font-size:10px; color:var(--green); opacity:0.8;">● 현재 단계</div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--green);"><span data-t="t-p1" data-ko="경미 (Minor)" data-en="Minor">Minor</span></div>
+            <div style="font-family:var(--body); font-size:10px; color:var(--green); opacity:0.8;"><span data-t="t-curr" data-ko="● 현재 단계" data-en="● Current Phase">● Current Phase</span></div>
           </div>
         </div>
         <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
-          정상 또는 단기 공급 충격 상황. 연료 기업이 상업적 수단으로 자체 대응. 정부는 글로벌 상황을 모니터링하고 위험을 파악합니다.
+          <span data-t="t-p1desc" data-ko="정상 또는 단기 공급 충격 상황. 연료 기업이 상업적 수단으로 자체 대응. 정부는 글로벌 상황을 모니터링하고 위험을 파악합니다." data-en="Normal or short-term supply shock. Fuel companies manage via commercial arrangements. Government monitors global conditions and identifies risks.">Normal or short-term supply shock. Fuel companies manage via commercial arrangements. Government monitors global conditions and identifies risks.</span>
         </div>
       </div>
 
@@ -616,11 +624,11 @@
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
           <div style="font-family:var(--mono); font-size:22px; color:var(--amber); line-height:1;">2</div>
           <div>
-            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--amber);">보통 (Moderate)</div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--amber);"><span data-t="t-p2" data-ko="보통 (Moderate)" data-en="Moderate">Moderate</span></div>
           </div>
         </div>
         <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
-          공급 차질이 지속될 경우 정부 개입 시작. 연료섹터조정기구(FSCE)가 가동되어 업계와 정부 간 실시간 정보 공유 및 조율.
+          <span data-t="t-p2desc" data-ko="공급 차질이 지속될 경우 정부 개입 시작. 연료섹터조정기구(FSCE)가 가동되어 업계와 정부 간 실시간 정보 공유 및 조율." data-en="If disruption continues, government intervention begins. The Fuel Sector Coordinating Entity is activated for real-time coordination between industry and government.">If disruption continues, government intervention begins. The Fuel Sector Coordinating Entity is activated for real-time coordination between industry and government.</span>
         </div>
       </div>
 
@@ -629,11 +637,11 @@
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
           <div style="font-family:var(--mono); font-size:22px; color:#ff7700; line-height:1;">3</div>
           <div>
-            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:#ff7700;">심각 (Major)</div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:#ff7700;"><span data-t="t-p3" data-ko="심각 (Major)" data-en="Major">Major</span></div>
           </div>
         </div>
         <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
-          공급 경로 재조정 지원, 대체 공급처 확보, 지역 간 연료 균형 배분, 수요 감소 조치 시행. 필수 서비스 우선 공급 검토.
+          <span data-t="t-p3desc" data-ko="공급 경로 재조정 지원, 대체 공급처 확보, 지역 간 연료 균형 배분, 수요 감소 조치 시행. 필수 서비스 우선 공급 검토." data-en="Support supply rerouting, secure alternative sources, balance regional distribution, implement demand reduction. Priority supply for essential services.">Support supply rerouting, secure alternative sources, balance regional distribution, implement demand reduction. Priority supply for essential services.</span>
         </div>
       </div>
 
@@ -642,11 +650,11 @@
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
           <div style="font-family:var(--mono); font-size:22px; color:var(--red); line-height:1;">4</div>
           <div>
-            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--red);">극심 (Severe)</div>
+            <div style="font-family:var(--body); font-weight:700; font-size:12px; color:var(--red);"><span data-t="t-p4" data-ko="극심 (Severe)" data-en="Severe">Severe</span></div>
           </div>
         </div>
         <div style="font-family:var(--body); font-size:11px; color:#ffffff; line-height:1.7;">
-          심각한 공급 부족 발생. 의료·응급·식품·물류·전력 등 필수 서비스에 연료 우선 배분. 자발적 수요 감축 권고 (재택근무, 카풀 등).
+          <span data-t="t-p4desc" data-ko="심각한 공급 부족 발생. 의료·응급·식품·물류·전력 등 필수 서비스에 연료 우선 배분. 자발적 수요 감축 권고 (재택근무, 카풀 등)." data-en="Serious supply shortage. Priority fuel allocation to essential services: healthcare, emergency, food, freight, utilities. Voluntary demand reduction recommended.">Serious supply shortage. Priority fuel allocation to essential services: healthcare, emergency, food, freight, utilities. Voluntary demand reduction recommended.</span>
         </div>
       </div>
 
@@ -658,37 +666,37 @@
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">휘발유</span>
-        <span class="panel-tag">최소 28일</span>
+        <span class="panel-title"><span data-t="t-petrol" data-ko="휘발유" data-en="Petrol">Petrol</span></span>
+        <span class="panel-tag"><span data-t="t-min28" data-ko="최소 28일" data-en="Min. 28 days">Min. 28 days</span></span>
       </div>
       <div class="stat-tile">
-        <div class="stat-label">총 가용 일수</div>
-        <div class="stat-val">51.3<span class="unit">일</span></div>
-        <div class="stat-sub">국내: <span style="color:var(--green);">28.1일</span> &nbsp;|&nbsp; 해상: <span style="color:var(--accent);">23.3일</span></div>
+        <div class="stat-label"><span data-t="t-totdays" data-ko="총 가용 일수" data-en="Total Days Cover">Total Days Cover</span></div>
+        <div class="stat-val">51.3<span class="unit"><span data-t="t-unit-days" data-ko="일" data-en="d">d</span></span></div>
+        <div class="stat-sub"><span data-t="t-onshore" data-ko="국내" data-en="Onshore">Onshore</span>: <span style="color:var(--green);">28.1<span data-t="t-unit-days2" data-ko="일" data-en="d">d</span></span> &nbsp;|&nbsp; <span data-t="t-onwater-short" data-ko="해상" data-en="On-water">On-water</span>: <span style="color:var(--accent);">23.3<span data-t="t-unit-days3" data-ko="일" data-en="d">d</span></span></div>
       </div>
     </div>
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">경유</span>
-        <span class="panel-tag">최소 21일</span>
+        <span class="panel-title"><span data-t="t-diesel" data-ko="경유" data-en="Diesel">Diesel</span></span>
+        <span class="panel-tag"><span data-t="t-min21" data-ko="최소 21일" data-en="Min. 21 days">Min. 21 days</span></span>
       </div>
       <div class="stat-tile">
-        <div class="stat-label">총 가용 일수</div>
-        <div class="stat-val">47.1<span class="unit">일</span></div>
-        <div class="stat-sub">국내: <span style="color:var(--green);">22.7일</span> &nbsp;|&nbsp; 해상: <span style="color:var(--accent);">24.3일</span></div>
+        <div class="stat-label"><span data-t="t-totdays-d" data-ko="총 가용 일수" data-en="Total Days Cover">Total Days Cover</span></div>
+        <div class="stat-val">47.1<span class="unit"><span data-t="t-unit-days-d" data-ko="일" data-en="d">d</span></span></div>
+        <div class="stat-sub"><span data-t="t-onshore-d" data-ko="국내" data-en="Onshore">Onshore</span>: <span style="color:var(--green);">22.7<span data-t="t-unit-days-d2" data-ko="일" data-en="d">d</span></span> &nbsp;|&nbsp; <span data-t="t-onwater-d" data-ko="해상" data-en="On-water">On-water</span>: <span style="color:var(--accent);">24.3<span data-t="t-unit-days-d3" data-ko="일" data-en="d">d</span></span></div>
       </div>
     </div>
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">항공유</span>
-        <span class="panel-tag">최소 24일</span>
+        <span class="panel-title"><span data-t="t-jet" data-ko="항공유" data-en="Jet Fuel">Jet Fuel</span></span>
+        <span class="panel-tag"><span data-t="t-min24" data-ko="최소 24일" data-en="Min. 24 days">Min. 24 days</span></span>
       </div>
       <div class="stat-tile">
-        <div class="stat-label">총 가용 일수</div>
-        <div class="stat-val">49.0<span class="unit">일</span></div>
-        <div class="stat-sub">국내: <span style="color:var(--green);">25.6일</span> &nbsp;|&nbsp; 해상: <span style="color:var(--accent);">23.4일</span></div>
+        <div class="stat-label"><span data-t="t-totdays-j" data-ko="총 가용 일수" data-en="Total Days Cover">Total Days Cover</span></div>
+        <div class="stat-val">49.0<span class="unit"><span data-t="t-unit-days-j" data-ko="일" data-en="d">d</span></span></div>
+        <div class="stat-sub"><span data-t="t-onshore-j" data-ko="국내" data-en="Onshore">Onshore</span>: <span style="color:var(--green);">25.6<span data-t="t-unit-days-j2" data-ko="일" data-en="d">d</span></span> &nbsp;|&nbsp; <span data-t="t-onwater-j" data-ko="해상" data-en="On-water">On-water</span>: <span style="color:var(--accent);">23.4<span data-t="t-unit-days-j3" data-ko="일" data-en="d">d</span></span></div>
       </div>
     </div>
 
@@ -697,19 +705,19 @@
   <!-- ROW 1b: 총 비축량 -->
   <div class="panel">
     <div class="panel-header">
-      <span class="panel-title">총 비축량 (전체 합산)</span>
-      <span class="panel-tag">국내 + 해상 · 2026.3.15</span>
+      <span class="panel-title"><span data-t="t-totstock" data-ko="총 비축량 (전체 합산)" data-en="Total Stock (Combined)">Total Stock (Combined)</span></span>
+      <span class="panel-tag">Onshore + On-water · 15 Mar 2026</span>
     </div>
     <div class="stat-tile" style="display:grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 0;">
       <div style="padding: 20px 24px; border-right: 1px solid var(--border);">
-        <div class="stat-label">국내재고</div>
-        <div class="stat-val" style="color:var(--green);">25.1<span class="unit">일</span></div>
-        <div class="stat-sub">휘발유 28.1 &nbsp;|&nbsp; 경유 22.7 &nbsp;|&nbsp; 항공유 25.6</div>
+        <div class="stat-label"><span data-t="t-onshore-lbl" data-ko="국내재고" data-en="Onshore Stock">Onshore Stock</span></div>
+        <div class="stat-val" style="color:var(--green);">25.1<span class="unit"><span data-t="t-unit-days-s" data-ko="일" data-en="d">d</span></span></div>
+        <div class="stat-sub"><span data-t="t-petrol-s" data-ko="휘발유" data-en="Petrol">Petrol</span> 28.1 &nbsp;|&nbsp; <span data-t="t-diesel-s" data-ko="경유" data-en="Diesel">Diesel</span> 22.7 &nbsp;|&nbsp; <span data-t="t-jet-s" data-ko="항공유" data-en="Jet">Jet</span> 25.6</div>
       </div>
       <div style="padding: 20px 24px;">
-        <div class="stat-label">해상재고 포함 총합</div>
-        <div class="stat-val">48.9<span class="unit">일</span></div>
-        <div class="stat-sub">해상: <span style="color:var(--accent);">23.8일</span> &nbsp;|&nbsp; <span class="sparkline" id="spark-combined" style="display:inline-flex; height:16px; margin:0; vertical-align:middle; width:60px;"></span></div>
+        <div class="stat-label"><span data-t="t-total-incl" data-ko="해상재고 포함 총합" data-en="Total incl. On-water">Total incl. On-water</span></div>
+        <div class="stat-val">48.9<span class="unit"><span data-t="t-unit-days-t" data-ko="일" data-en="d">d</span></span></div>
+        <div class="stat-sub"><span data-t="t-onwater-lbl" data-ko="해상" data-en="On-water">On-water</span>: <span style="color:var(--accent);">23.8<span data-t="t-unit-days-t2" data-ko="일" data-en="d">d</span></span> &nbsp;|&nbsp; <span class="sparkline" id="spark-combined" style="display:inline-flex; height:16px; margin:0; vertical-align:middle; width:60px;"></span></div>
       </div>
     </div>
   </div>
@@ -719,61 +727,61 @@
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">국내재고 vs 최소의무 비교</span>
+        <span class="panel-title"><span data-t="t-gauge-title" data-ko="국내재고 vs 최소의무 비교" data-en="Onshore Stock vs Minimum Obligation">Onshore Stock vs Minimum Obligation</span></span>
         <span class="panel-tag">MBIE · 2026.3.15</span>
       </div>
       <div class="panel-body">
         <div>
 
           <div class="gauge-row">
-            <div class="gauge-name">휘발유</div>
+            <div class="gauge-name"><span data-t="t-g-petrol" data-ko="휘발유" data-en="Petrol">Petrol</span></div>
             <div class="gauge-track">
               <div class="gauge-fill" style="width:55%; background: linear-gradient(90deg, var(--amber), #ffdd00);"></div>
               <div class="gauge-threshold" style="left: 46.7%;"></div>
             </div>
-            <div class="gauge-val">28.1 <span class="days">일</span></div>
+            <div class="gauge-val">28.1 <span class="days"><span data-t="t-g-d1" data-ko="일" data-en="d">d</span></span></div>
           </div>
 
           <div class="gauge-row">
-            <div class="gauge-name">경유</div>
+            <div class="gauge-name"><span data-t="t-g-diesel" data-ko="경유" data-en="Diesel">Diesel</span></div>
             <div class="gauge-track">
               <div class="gauge-fill" style="width:37.8%; background: linear-gradient(90deg, var(--amber), #ffdd00);"></div>
               <div class="gauge-threshold" style="left: 35%;"></div>
             </div>
-            <div class="gauge-val">22.7 <span class="days">일</span></div>
+            <div class="gauge-val">22.7 <span class="days"><span data-t="t-g-d2" data-ko="일" data-en="d">d</span></span></div>
           </div>
 
           <div class="gauge-row">
-            <div class="gauge-name">항공유</div>
+            <div class="gauge-name"><span data-t="t-g-jet" data-ko="항공유" data-en="Jet Fuel">Jet Fuel</span></div>
             <div class="gauge-track">
               <div class="gauge-fill" style="width:42.7%; background: linear-gradient(90deg, var(--amber), #ffdd00);"></div>
               <div class="gauge-threshold" style="left: 40%;"></div>
             </div>
-            <div class="gauge-val">25.6 <span class="days">일</span></div>
+            <div class="gauge-val">25.6 <span class="days"><span data-t="t-g-d3" data-ko="일" data-en="d">d</span></span></div>
           </div>
 
         </div>
 
         <div style="margin-top:14px; padding-top:12px; border-top: 1px solid var(--border); font-family: var(--body); font-size:10px; color:#aaaaaa;">
-          <span style="color:var(--amber);">■</span> 국내재고 &nbsp;|&nbsp; <span style="color:var(--red);">─</span> 최소 의무 기준선 &nbsp;|&nbsp; 막대는 국내재고만 표시
+          <span style="color:var(--amber);">■</span> <span data-t="t-legend-on" data-ko="국내재고" data-en="Onshore">Onshore</span> &nbsp;|&nbsp; <span style="color:var(--red);">─</span> <span data-t="t-legend-min" data-ko="최소 의무 기준선" data-en="Minimum threshold">Minimum threshold</span> &nbsp;|&nbsp; <span data-t="t-legend-note" data-ko="막대는 국내재고만 표시" data-en="Bars show onshore only">Bars show onshore only</span>
         </div>
 
         <div style="margin-top:16px;">
           <div class="status-row">
-            <span class="status-key">최소의무비축제도</span>
-            <span class="status-val dot-green">● 2025.1.1 시행</span>
+            <span class="status-key"><span data-t="t-mso" data-ko="최소의무비축제도" data-en="Minimum Stockholding Obligation">Minimum Stockholding Obligation</span></span>
+            <span class="status-val dot-green">● Active from 1 Jan 2025</span>
           </div>
           <div class="status-row">
-            <span class="status-key">국가연료계획 단계</span>
-            <span class="status-val dot-green">● 단계 1 — 경미</span>
+            <span class="status-key"><span data-t="t-nfp-phase" data-ko="국가연료계획 단계" data-en="National Fuel Plan Phase">National Fuel Plan Phase</span></span>
+            <span class="status-val dot-green"><span data-t="t-phase-val2" data-ko="● 단계 1 — 경미" data-en="● Phase 1 — Minor">● Phase 1 — Minor</span></span>
           </div>
           <div class="status-row">
-            <span class="status-key">공급 차질</span>
-            <span class="status-val dot-green">● 없음 — 정상 운영</span>
+            <span class="status-key"><span data-t="t-disruption" data-ko="공급 차질" data-en="Supply Disruption">Supply Disruption</span></span>
+            <span class="status-val dot-green"><span data-t="t-nodis" data-ko="● 없음 — 정상 운영" data-en="● None — normal operations">● None — normal operations</span></span>
           </div>
           <div class="status-row">
-            <span class="status-key">IEA 공동조치</span>
-            <span class="status-val dot-amber">● 진행 중 (4억 배럴)</span>
+            <span class="status-key"><span data-t="t-iea-key2" data-ko="IEA 공동조치" data-en="IEA Collective Action">IEA Collective Action</span></span>
+            <span class="status-val dot-amber"><span data-t="t-iea-val" data-ko="● 진행 중 (4억 배럴)" data-en="● Underway (400M bbl)">● Underway (400M bbl)</span></span>
           </div>
         </div>
       </div>
@@ -781,51 +789,51 @@
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">전체 비축량 상세</span>
-        <span class="panel-tag">가용 일수 기준 · 2026.3.15</span>
+        <span class="panel-title"><span data-t="t-breakdown" data-ko="전체 비축량 상세" data-en="Full Stock Breakdown">Full Stock Breakdown</span></span>
+        <span class="panel-tag">Days cover · 15 Mar 2026</span>
       </div>
       <div class="panel-body" style="padding:0;">
         <table class="cmp-table">
           <thead>
             <tr>
-              <th>구분</th>
-              <th>휘발유</th>
-              <th>경유</th>
-              <th>항공유</th>
-              <th>합계</th>
+              <th><span data-t="t-th-cat" data-ko="구분" data-en="Category">Category</span></th>
+              <th><span data-t="t-th-petrol" data-ko="휘발유" data-en="Petrol">Petrol</span></th>
+              <th><span data-t="t-th-diesel" data-ko="경유" data-en="Diesel">Diesel</span></th>
+              <th><span data-t="t-th-jet" data-ko="항공유" data-en="Jet Fuel">Jet Fuel</span></th>
+              <th><span data-t="t-th-total" data-ko="합계" data-en="Combined">Combined</span></th>
             </tr>
           </thead>
           <tbody>
             <tr>
-              <td style="color:var(--green);">국내재고</td>
+              <td style="color:var(--green);"><span data-t="t-onshore-row" data-ko="국내재고" data-en="Onshore Stock">Onshore Stock</span></td>
               <td style="color:var(--green);">28.1</td>
               <td style="color:var(--green);">22.7</td>
               <td style="color:var(--green);">25.6</td>
               <td style="color:var(--green);">25.1</td>
             </tr>
             <tr>
-              <td style="color:var(--accent);">해상재고</td>
+              <td style="color:var(--accent);"><span data-t="t-onwater-row" data-ko="해상재고" data-en="On-water Stock">On-water Stock</span></td>
               <td style="color:var(--accent);">23.3</td>
               <td style="color:var(--accent);">24.3</td>
               <td style="color:var(--accent);">23.4</td>
               <td style="color:var(--accent);">23.8</td>
             </tr>
             <tr style="background: rgba(0,212,255,0.04);">
-              <td style="color:var(--accent);">NZ 총 비축량</td>
+              <td style="color:var(--accent);"><span data-t="t-nztotal" data-ko="NZ 총 비축량" data-en="NZ Total Stock">NZ Total Stock</span></td>
               <td class="hl">51.3</td>
               <td class="hl">47.1</td>
               <td class="hl">49.0</td>
               <td class="hl">48.9</td>
             </tr>
             <tr>
-              <td style="color:var(--amber); font-size:11px;">최소 의무 기준</td>
+              <td style="color:var(--amber); font-size:11px;"><span data-t="t-minreq" data-ko="최소 의무 기준" data-en="Minimum Required">Minimum Required</span></td>
               <td style="color:var(--amber); font-size:11px;">28</td>
               <td style="color:var(--amber); font-size:11px;">21</td>
               <td style="color:var(--amber); font-size:11px;">24</td>
               <td style="color:var(--amber); font-size:11px;">—</td>
             </tr>
             <tr>
-              <td style="color:var(--green); font-size:11px;">기준 초과분</td>
+              <td style="color:var(--green); font-size:11px;"><span data-t="t-buffer" data-ko="기준 초과분" data-en="Buffer above min.">Buffer above min.</span></td>
               <td style="color:var(--green); font-size:11px;">+0.1</td>
               <td style="color:var(--green); font-size:11px;">+1.7</td>
               <td style="color:var(--green); font-size:11px;">+1.6</td>
@@ -834,29 +842,29 @@
           </tbody>
         </table>
         <div style="padding:12px 10px; border-top: 1px solid var(--border);">
-          <div style="font-family:var(--body); font-weight:700; font-size:11px; color:#ffffff; margin-bottom:8px;">향후 2주 입항 예정 선박</div>
+          <div style="font-family:var(--body); font-weight:700; font-size:11px; color:#ffffff; margin-bottom:8px;"><span data-t="t-vessels" data-ko="향후 2주 입항 예정 선박" data-en="Incoming Vessels — Next 2 Weeks">Incoming Vessels — Next 2 Weeks</span></div>
           <table class="cmp-table">
             <thead>
               <tr>
-                <th>입항 기간</th>
-                <th>선박 수</th>
-                <th>휘발유</th>
-                <th>경유</th>
-                <th>항공유</th>
+                <th><span data-t="t-th-window" data-ko="입항 기간" data-en="Arrival Window">Arrival Window</span></th>
+                <th><span data-t="t-th-ships" data-ko="선박 수" data-en="Vessels">Vessels</span></th>
+                <th><span data-t="t-th-v-petrol" data-ko="휘발유" data-en="Petrol">Petrol</span></th>
+                <th><span data-t="t-th-v-diesel" data-ko="경유" data-en="Diesel">Diesel</span></th>
+                <th><span data-t="t-th-v-jet" data-ko="항공유" data-en="Jet Fuel">Jet Fuel</span></th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td style="font-size:11px;">3월 16~22일</td>
-                <td style="color:var(--accent);">10척</td>
-                <td>22일분</td>
-                <td>14일분</td>
-                <td>13일분</td>
+                <td style="font-size:11px;">16–22 Mar</td>
+                <td style="color:var(--accent);">10</td>
+                <td>22d</td>
+                <td>14d</td>
+                <td>13d</td>
               </tr>
               <tr>
-                <td style="font-size:11px;">3월 23~29일</td>
-                <td style="color:var(--accent);">1척</td>
-                <td>6일분</td>
+                <td style="font-size:11px;">23–29 Mar</td>
+                <td style="color:var(--accent);">1</td>
+                <td>6d</td>
                 <td style="color:#aaaaaa;">—</td>
                 <td style="color:#aaaaaa;">—</td>
               </tr>
@@ -873,67 +881,67 @@
 
     <div class="panel">
       <div class="panel-header">
-        <span class="panel-title">에너지 원자재 가격</span>
-        <span class="panel-tag" id="commodityTag">Yahoo Finance · 로딩 중...</span>
+        <span class="panel-title"><span data-t="t-comm-title" data-ko="에너지 원자재 가격" data-en="Energy Commodity Prices">Energy Commodity Prices</span></span>
+        <span class="panel-tag" id="commodityTag">Yahoo Finance · Loading...</span>
       </div>
       <div class="panel-body" style="padding:0;">
         <table class="cmp-table" id="commodityTable">
           <thead>
             <tr>
-              <th>원자재</th>
-              <th>현재가</th>
-              <th>변동</th>
-              <th>변동률</th>
+              <th><span data-t="t-th-comm" data-ko="원자재" data-en="Commodity">Commodity</span></th>
+              <th><span data-t="t-th-price" data-ko="현재가" data-en="Price">Price</span></th>
+              <th><span data-t="t-th-chg" data-ko="변동" data-en="Change">Change</span></th>
+              <th><span data-t="t-th-pct" data-ko="변동률" data-en="% Change">% Change</span></th>
             </tr>
           </thead>
           <tbody id="commodityBody">
             <tr>
-              <td colspan="4" style="text-align:center; padding:20px; color:#999; font-family:var(--body);">데이터 로딩 중...</td>
+              <td colspan="4" style="text-align:center; padding:20px; color:#999; font-family:var(--body);">Loading...</td>
             </tr>
           </tbody>
         </table>
         <div style="padding:10px 16px; border-top:1px solid var(--border); font-family:var(--body); font-size:10px; color:#999; line-height:1.7;">
-          출처: <a href="https://finance.yahoo.com" target="_blank" style="color:#cccccc;">Yahoo Finance</a> · 브라우저에서 실시간 fetch
+          Source: <a href="https://finance.yahoo.com" target="_blank" style="color:#cccccc;">Yahoo Finance</a> · live fetch
         </div>
       </div>
     </div>
 
     <div class="panel iea-panel">
       <div class="panel-header">
-        <span class="panel-title">IEA 공동조치</span>
-        <span class="panel-tag">시행 중 · 2026.3.11</span>
+        <span class="panel-title"><span data-t="t-iea-key" data-ko="IEA 공동조치" data-en="IEA Collective Action">IEA Collective Action</span></span>
+        <span class="panel-tag">Active · 11 Mar 2026</span>
       </div>
       <div class="panel-body">
 
         <div style="margin-bottom:16px;">
-          <div class="stat-label">방출 배럴</div>
-          <div class="stat-val" style="color:var(--amber);">4억<span class="unit">배럴</span></div>
-          <div class="stat-sub">글로벌 원유 안정화를 위한 IEA 회원국 공조</div>
+          <div class="stat-label"><span data-t="t-iea-label" data-ko="방출 배럴" data-en="Barrels Released">Barrels Released</span></div>
+          <div class="stat-val" style="color:var(--amber);">400M<span class="unit">bbl</span></div>
+          <div class="stat-sub"><span data-t="t-iea-sub" data-ko="글로벌 원유 안정화를 위한 IEA 회원국 공조" data-en="IEA member coordination to stabilise global crude supply">IEA member coordination to stabilise global crude supply</span></div>
         </div>
 
         <div class="status-row">
-          <span class="status-key">발동일</span>
-          <span class="status-val">2026년 3월 11일</span>
+          <span class="status-key"><span data-t="t-iea-date-key" data-ko="발동일" data-en="Date Activated">Date Activated</span></span>
+          <span class="status-val">11 March 2026</span>
         </div>
         <div class="status-row">
-          <span class="status-key">발동 원인</span>
-          <span class="status-val">중동 분쟁</span>
+          <span class="status-key"><span data-t="t-iea-cause-key" data-ko="발동 원인" data-en="Triggered by">Triggered by</span></span>
+          <span class="status-val"><span data-t="t-iea-cause-val" data-ko="중동 분쟁" data-en="Middle East conflict">Middle East conflict</span></span>
         </div>
         <div class="status-row">
-          <span class="status-key">기대 효과</span>
-          <span class="status-val">정제소 원유 접근 완화</span>
+          <span class="status-key"><span data-t="t-iea-effect-key" data-ko="기대 효과" data-en="Expected Effect">Expected Effect</span></span>
+          <span class="status-val"><span data-t="t-iea-effect-val" data-ko="정제소 원유 접근 완화" data-en="Ease refinery access to crude">Ease refinery access to crude</span></span>
         </div>
         <div class="status-row">
-          <span class="status-key">NZ 의무 이행</span>
-          <span class="status-val dot-amber">● 석유 티켓 방출</span>
+          <span class="status-key"><span data-t="t-iea-nz-key" data-ko="NZ 의무 이행" data-en="NZ Obligation">NZ Obligation</span></span>
+          <span class="status-val dot-amber"><span data-t="t-iea-nz-val" data-ko="● 석유 티켓 방출" data-en="● Oil tickets released">● Oil tickets released</span></span>
         </div>
 
         <div style="margin-top:16px; padding:12px; background:var(--green-dim); border:1px solid rgba(0,232,122,0.15); border-radius:2px; font-family:var(--body); font-size:11px; color:var(--green); line-height:1.6;">
-          ✓ 현재 NZ 연료 공급은 안정적이며 비축량은 최소 기준을 상회하고 있습니다.
+          <span data-t="t-iea-ok" data-ko="✓ 현재 NZ 연료 공급은 안정적이며 비축량은 최소 기준을 상회하고 있습니다." data-en="✓ NZ fuel supply is currently stable and stocks are above minimum thresholds.">✓ NZ fuel supply is currently stable and stocks are above minimum thresholds.</span>
         </div>
 
         <div style="margin-top:10px; font-family:var(--body); font-size:10px; color:#aaaaaa; line-height:1.7;">
-          출처: MBIE — Middle East conflict and New Zealand's fuel stocks
+          Source: MBIE — Middle East conflict and New Zealand's fuel stocks
         </div>
       </div>
     </div>
@@ -943,16 +951,16 @@
   <!-- ROW 3b: Energy price chart -->
   <div class="panel">
     <div class="panel-header">
-      <span class="panel-title">에너지 원자재 가격 추이</span>
-      <span class="panel-tag" id="chartTag">Yahoo Finance · 로딩 중...</span>
+      <span class="panel-title"><span data-t="t-chart-title" data-ko="에너지 원자재 가격 추이" data-en="Energy Price Trends">Energy Price Trends</span></span>
+      <span class="panel-tag" id="chartTag">Yahoo Finance · Loading...</span>
     </div>
     <div class="panel-body" style="padding: 16px;">
 
       <!-- timeframe buttons -->
       <div style="display:flex; justify-content:flex-end; margin-bottom:14px; gap:4px;">
-        <button onclick="loadChart('1wk')" id="btn-1wk" class="tf-btn active">1주</button>
-        <button onclick="loadChart('4wk')" id="btn-4wk" class="tf-btn">4주</button>
-        <button onclick="loadChart('3mo')" id="btn-3mo" class="tf-btn">3개월</button>
+        <button onclick="loadChart('1wk')" id="btn-1wk" class="tf-btn active">1 Week</button>
+        <button onclick="loadChart('4wk')" id="btn-4wk" class="tf-btn">4 Weeks</button>
+        <button onclick="loadChart('3mo')" id="btn-3mo" class="tf-btn">3 Months</button>
       </div>
 
       <!-- 5 mini charts grid -->
@@ -961,27 +969,27 @@
       </div>
 
       <div style="margin-top:12px; font-family:var(--body); font-size:10px; color:#999;">
-        출처: Yahoo Finance · hover로 가격 확인
+        Source: Yahoo Finance · hover to see prices
       </div>
     </div>
   </div>
   <div class="panel">
     <div class="panel-header">
-      <span class="panel-title">현황 평가 및 주요 모니터링 포인트</span>
-      <span class="panel-tag">MBIE 기반 · 2026.3.20</span>
+      <span class="panel-title"><span data-t="t-assess-title" data-ko="현황 평가 및 주요 모니터링 포인트" data-en="Current Assessment & Watch Points">Current Assessment & Watch Points</span></span>
+      <span class="panel-tag">MBIE-based · 20 Mar 2026</span>
     </div>
     <div class="panel-body" style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:24px;">
       <div>
-        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--green); margin-bottom:8px;">▶ 단기 현황 (현재)</div>
-        <div style="font-size:13px; line-height:1.8; color:#ffffff;">비축량은 최소 기준을 충분히 상회하고 있습니다. 구매 습관을 변경할 필요가 없습니다.</div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--green); margin-bottom:8px;"><span data-t="t-a1-title" data-ko="▶ 단기 현황 (현재)" data-en="▶ Short Term (Now)">▶ Short Term (Now)</span></div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;"><span data-t="t-a1-body" data-ko="비축량은 최소 기준을 충분히 상회하고 있습니다. 구매 습관을 변경할 필요가 없습니다." data-en="Stocks remain well above minimum thresholds. No need to change purchasing habits.">Stocks remain well above minimum thresholds. No need to change purchasing habits.</span></div>
       </div>
       <div>
-        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px;">⚠ 모니터링 포인트 (3월 23~29일)</div>
-        <div style="font-size:13px; line-height:1.8; color:#ffffff;">3월 23~29일 기간에는 휘발유 전용 선박 1척만 확정되어 있습니다. 추가 화물이 없을 경우 3월 말 경유 및 항공유 공급에 차질이 생길 수 있습니다.</div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px;"><span data-t="t-a2-title" data-ko="⚠ 모니터링 포인트 (3월 23~29일)" data-en="⚠ Watch Points (23–29 Mar)">⚠ Watch Points (23–29 Mar)</span></div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;"><span data-t="t-a2-body" data-ko="3월 23~29일 기간에는 휘발유 전용 선박 1척만 확정되어 있습니다. 추가 화물이 없을 경우 3월 말 경유 및 항공유 공급에 차질이 생길 수 있습니다." data-en="Only 1 petrol vessel confirmed for 23–29 Mar window. Diesel and jet fuel supply may face a gap by late March if no additional cargoes materialise.">Only 1 petrol vessel confirmed for 23–29 Mar window. Diesel and jet fuel supply may face a gap by late March if no additional cargoes materialise.</span></div>
       </div>
       <div>
-        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px;">ℹ 글로벌 맥락</div>
-        <div style="font-size:13px; line-height:1.8; color:#ffffff;">중동 분쟁으로 글로벌 연료 시장에 압력이 가해지고 있으나, NZ 공급망은 현재 안정적입니다. IEA 4억 배럴 방출로 원유 수급 완화가 기대됩니다.</div>
+        <div style="font-family:var(--body); font-weight:700; font-size:11px; color:var(--amber); margin-bottom:8px;"><span data-t="t-a3-title" data-ko="ℹ 글로벌 맥락" data-en="ℹ Global Context">ℹ Global Context</span></div>
+        <div style="font-size:13px; line-height:1.8; color:#ffffff;"><span data-t="t-a3-body" data-ko="중동 분쟁으로 글로벌 연료 시장에 압력이 가해지고 있으나, NZ 공급망은 현재 안정적입니다. IEA 4억 배럴 방출로 원유 수급 완화가 기대됩니다." data-en="Middle East conflict is adding pressure to global fuel markets, but NZ supply chains remain stable. IEA's 400M bbl release is expected to ease crude oil availability.">Middle East conflict is adding pressure to global fuel markets, but NZ supply chains remain stable. IEA's 400M bbl release is expected to ease crude oil availability.</span></div>
       </div>
     </div>
   </div>
@@ -989,7 +997,7 @@
   <!-- Gaspy iframe -->
   <div class="panel">
     <div class="panel-header">
-      <span class="panel-title">NZ 주유소 실시간 가격</span>
+      <span class="panel-title"><span data-t="t-gaspy-title" data-ko="NZ 주유소 실시간 가격" data-en="NZ Live Fuel Station Prices">NZ Live Fuel Station Prices</span></span>
       <span class="panel-tag">Gaspy · gaspy.nz/stats.html</span>
     </div>
     <div style="padding:0; overflow:hidden; border-radius:0 0 4px 4px;">
@@ -1005,10 +1013,10 @@
 </main>
 
 <footer>
-  <div>NZ 연료 감시 · 정부 공식 사이트 아님 · 데이터 출처: MBIE, Yahoo Finance, IEA</div>
+  <div>NZ Fuel Watch · Not government affiliated · Data: MBIE, Yahoo Finance, IEA</div>
   <div>
-    <a href="https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-generation-and-markets/liquid-fuel-market/fuel-supply-disruption-response/middle-east-conflict-and-new-zealands-fuel-stocks" target="_blank">MBIE 원본 ↗</a>
-    &nbsp;·&nbsp; v1.0 초안
+    <a href="https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-generation-and-markets/liquid-fuel-market/fuel-supply-disruption-response/middle-east-conflict-and-new-zealands-fuel-stocks" target="_blank">MBIE Source ↗</a>
+    &nbsp;·&nbsp; v1.0 draft
   </div>
 </footer>
 
@@ -1066,7 +1074,7 @@
       </tr>`;
     }).join('');
   } catch(e) {
-    document.getElementById('commodityBody').innerHTML = `<tr><td colspan="4" style="text-align:center;padding:16px;color:#999;font-size:11px;">로딩 실패: ${e.message}</td></tr>`;
+    document.getElementById('commodityBody').innerHTML = `<tr><td colspan="4" style="text-align:center;padding:16px;color:#999;font-size:11px;">Failed to fetch: ${e.message}</td></tr>`;
   }
 })();
 
@@ -1080,9 +1088,9 @@ const CHART_COMMODITIES = [
 ];
 const CHART_PROXY = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
 const TF_CONFIG = {
-  '1wk': { range: '5d',  interval: '1d',  label: '1주' },
-  '4wk': { range: '1mo', interval: '1d',  label: '4주' },
-  '3mo': { range: '3mo', interval: '1wk', label: '3개월' },
+  '1wk': { range: '5d',  interval: '1d',  label: '1 Week' },
+  '4wk': { range: '1mo', interval: '1d',  label: '4 Weeks' },
+  '3mo': { range: '3mo', interval: '1wk', label: '3 Months' },
 };
 
 async function fetchChartData(ticker, tf) {
@@ -1224,7 +1232,7 @@ async function loadChart(tf) {
 
   grid.innerHTML = CHART_COMMODITIES.map(c =>
     `<div style="border:1px solid var(--border);border-radius:4px;background:var(--surface2);height:165px;display:flex;align-items:center;justify-content:center;">
-      <span style="font-size:11px;color:#555;">${c.name} 로딩 중...</span>
+      <span style="font-size:11px;color:#555;">${c.name} Loading...</span>
     </div>`
   ).join('') + '<div></div>';
 
@@ -1238,11 +1246,23 @@ async function loadChart(tf) {
     const cells = grid.querySelectorAll('div');
     CHART_COMMODITIES.forEach((c, i) => drawMiniChart(cells[i], allData[i], c));
   } catch(e) {
-    grid.innerHTML = `<div style="padding:20px;color:#ff3d5a;font-size:11px;">로딩 실패: ${e.message}</div>`;
+    grid.innerHTML = `<div style="padding:20px;color:#ff3d5a;font-size:11px;">Failed to fetch: ${e.message}</div>`;
   }
 }
 
 loadChart('1wk');
+
+// Language toggle
+let currentLang = 'en';
+function toggleLang() {
+  currentLang = currentLang === 'en' ? 'ko' : 'en';
+  const btn = document.getElementById('langToggle');
+  btn.textContent = currentLang === 'en' ? '한국어' : 'English';
+  document.querySelectorAll('[data-t]').forEach(el => {
+    el.textContent = currentLang === 'en' ? el.dataset.en : el.dataset.ko;
+  });
+}
+
 </script>
 </body>
 </html>
