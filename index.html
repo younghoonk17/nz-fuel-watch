@@ -1038,11 +1038,11 @@
 // ── Yahoo Finance commodity TABLE ──
 (async function() {
   const commodities = [
-    { ticker: 'CL=F', name: 'WTI 원유',  unit: 'USD/bbl',   decimals: 2 },
-    { ticker: 'BZ=F', name: '브렌트유',  unit: 'USD/bbl',   decimals: 2 },
-    { ticker: 'NG=F', name: '천연가스',  unit: 'USD/MMBtu', decimals: 3 },
-    { ticker: 'RB=F', name: '가솔린',    unit: 'USD/gal',   decimals: 3 },
-    { ticker: 'HO=F', name: '난방유',    unit: 'USD/gal',   decimals: 3 },
+    { ticker: 'CL=F', name: 'WTI Crude',  unit: 'USD/bbl',   decimals: 2 },
+    { ticker: 'BZ=F', name: 'Brent Crude',  unit: 'USD/bbl',   decimals: 2 },
+    { ticker: 'NG=F', name: 'Natural Gas',  unit: 'USD/MMBtu', decimals: 3 },
+    { ticker: 'RB=F', name: 'Gasoline',    unit: 'USD/gal',   decimals: 3 },
+    { ticker: 'HO=F', name: 'Heating Oil',    unit: 'USD/gal',   decimals: 3 },
   ];
   const BASE = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
 
@@ -1081,11 +1081,11 @@
 
 // ── Yahoo Finance energy CHARTS ──
 const CHART_COMMODITIES = [
-  { ticker: 'CL=F', name: 'WTI 원유',  unit: 'USD/bbl',   color: '#ffb800', decimals: 2 },
-  { ticker: 'BZ=F', name: '브렌트유',  unit: 'USD/bbl',   color: '#00d4ff', decimals: 2 },
-  { ticker: 'NG=F', name: '천연가스',  unit: 'USD/MMBtu', color: '#00e87a', decimals: 3 },
-  { ticker: 'RB=F', name: '가솔린',    unit: 'USD/gal',   color: '#ff7700', decimals: 3 },
-  { ticker: 'HO=F', name: '난방유',    unit: 'USD/gal',   color: '#ff3d5a', decimals: 3 },
+  { ticker: 'CL=F', name: 'WTI Crude',  unit: 'USD/bbl',   color: '#ffb800', decimals: 2 },
+  { ticker: 'BZ=F', name: 'Brent Crude',  unit: 'USD/bbl',   color: '#00d4ff', decimals: 2 },
+  { ticker: 'NG=F', name: 'Natural Gas',  unit: 'USD/MMBtu', color: '#00e87a', decimals: 3 },
+  { ticker: 'RB=F', name: 'Gasoline',    unit: 'USD/gal',   color: '#ff7700', decimals: 3 },
+  { ticker: 'HO=F', name: 'Heating Oil',    unit: 'USD/gal',   color: '#ff3d5a', decimals: 3 },
 ];
 const CHART_PROXY = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
 const TF_CONFIG = {
