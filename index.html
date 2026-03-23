@@ -942,62 +942,127 @@ function renderCharts(results, tf) {
   const wrap = document.getElementById('chartsWrap');
   wrap.innerHTML = '';
   results.forEach((r, i) => {
-    if (!r) { wrap.innerHTML += `<div class="chart-card"><div class="loading-msg">No data</div></div>`; return; }
+    if (!r) {
+      const err = document.createElement('div');
+      err.className = 'chart-card';
+      err.innerHTML = '<div class="loading-msg">No data</div>';
+      wrap.appendChild(err);
+      return;
+    }
     const tk = TICKERS[i];
-    const closes = r.indicators.quote[0].close.filter(v => v !== null);
-    const timestamps = r.timestamp;
+    // pair closes with timestamps, filter nulls
+    const raw = r.indicators.quote[0].close;
+    const ts = r.timestamp;
+    const pairs = raw.map((v,j) => ({ v, t: ts[j] })).filter(p => p.v !== null);
+    const closes = pairs.map(p => p.v);
+    const stamps = pairs.map(p => p.t);
     const cur = closes[closes.length-1];
     const prev = closes[closes.length-2] || closes[0];
     const chg = cur - prev;
     const pct = (chg/prev*100);
-    const chgColor = chg >= 0 ? 'var(--green)' : 'var(--red)';
+    const chgColor = chg >= 0 ? '#00e87a' : '#ff3d5a';
     const chgSign = chg >= 0 ? '+' : '';
-    const svg = buildSVG(closes, timestamps, chg >= 0);
-    wrap.innerHTML += `
-      <div class="chart-card">
-        <div class="chart-header">
-          <div>
-            <div class="chart-ticker">${tk.t}</div>
-            <div class="chart-name">${tk.name}</div>
-          </div>
-          <div style="text-align:right">
-            <div class="chart-price">${cur.toFixed(2)}</div>
-            <div class="chart-change" style="color:${chgColor}">${chgSign}${chg.toFixed(2)} (${chgSign}${pct.toFixed(2)}%)</div>
-          </div>
-        </div>
-        <div class="chart-svg-wrap">${svg}</div>
-      </div>`;
-  });
-}
 
-function buildSVG(values, timestamps, isUp) {
-  const W = 260, H = 80, PAD = 4;
-  const min = Math.min(...values);
-  const max = Math.max(...values);
-  const range = max - min || 1;
-  const n = values.length;
-  const sx = i => PAD + (i / (n-1)) * (W - 2*PAD);
-  const sy = v => PAD + (1 - (v - min)/range) * (H - 2*PAD);
-  const pts = values.map((v,i) => `${sx(i)},${sy(v)}`).join(' ');
-  const color = isUp ? '#00e87a' : '#ff3d5a';
-  const polyPts = `${sx(0)},${H} ` + pts + ` ${sx(n-1)},${H}`;
-  // grid lines
-  let grids = '';
-  for (let i = 0; i < n; i++) {
-    grids += `<line x1="${sx(i)}" y1="${PAD}" x2="${sx(i)}" y2="${H-PAD}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
-  }
-  const gradId = `g${Math.random().toString(36).slice(2,7)}`;
-  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="overflow:visible">
-    <defs>
-      <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
-        <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
-      </linearGradient>
-    </defs>
-    ${grids}
-    <polygon points="${polyPts}" fill="url(#${gradId})"/>
-    <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>
-  </svg>`;
+    // card
+    const card = document.createElement('div');
+    card.className = 'chart-card';
+
+    // header
+    const hdr = document.createElement('div');
+    hdr.className = 'chart-header';
+    hdr.innerHTML = `
+      <div>
+        <div class="chart-ticker">${tk.t}</div>
+        <div class="chart-name">${tk.name}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="chart-price" id="cp-${i}">${cur.toFixed(2)}</div>
+        <div class="chart-change" id="cc-${i}" style="color:${chgColor}">${chgSign}${chg.toFixed(2)} (${chgSign}${pct.toFixed(2)}%)</div>
+      </div>`;
+    card.appendChild(hdr);
+
+    // tooltip label
+    const tooltip = document.createElement('div');
+    tooltip.style.cssText = 'font-size:0.7rem;color:var(--text-muted);font-family:"Share Tech Mono",monospace;min-height:14px;margin-bottom:4px;';
+    card.appendChild(tooltip);
+
+    // svg wrap
+    const svgWrap = document.createElement('div');
+    svgWrap.className = 'chart-svg-wrap';
+    svgWrap.style.cursor = 'crosshair';
+
+    const W = 260, H = 80, PAD = 4;
+    const n = closes.length;
+    const minV = Math.min(...closes);
+    const maxV = Math.max(...closes);
+    const rangeV = maxV - minV || 1;
+    const sx = j => PAD + (j / (n-1)) * (W - 2*PAD);
+    const sy = v => PAD + (1 - (v - minV)/rangeV) * (H - 2*PAD);
+    const color = chg >= 0 ? '#00e87a' : '#ff3d5a';
+    const gradId = `g${i}_${Date.now()}`;
+    const pts = closes.map((v,j) => `${sx(j)},${sy(v)}`).join(' ');
+    const polyPts = `${sx(0)},${H} ${pts} ${sx(n-1)},${H}`;
+
+    let gridLines = '';
+    for (let j = 0; j < n; j++) {
+      gridLines += `<line x1="${sx(j).toFixed(1)}" y1="${PAD}" x2="${sx(j).toFixed(1)}" y2="${H-PAD}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
+    }
+
+    const NS = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(NS, 'svg');
+    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
+    svg.style.cssText = 'width:100%;height:100%;overflow:visible';
+
+    svg.innerHTML = `
+      <defs>
+        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      ${gridLines}
+      <polygon points="${polyPts}" fill="url(#${gradId})"/>
+      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>
+      <line id="ch-${i}" x1="0" y1="${PAD}" x2="0" y2="${H-PAD}" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="3,2" display="none"/>
+      <circle id="cd-${i}" r="3" fill="${color}" stroke="#0a0c0f" stroke-width="1.5" display="none"/>`;
+
+    svgWrap.appendChild(svg);
+    card.appendChild(svgWrap);
+    wrap.appendChild(card);
+
+    const chLine = svg.getElementById(`ch-${i}`);
+    const chDot  = svg.getElementById(`cd-${i}`);
+
+    svgWrap.addEventListener('mousemove', e => {
+      const rect = svgWrap.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const pct = mx / rect.width;
+      const idx = Math.min(n-1, Math.max(0, Math.round(pct * (n-1))));
+      const xPos = sx(idx);
+      const yPos = sy(closes[idx]);
+
+      // scale xPos from SVG coords to screen
+      const scaleX = rect.width / W;
+      const scaleY = rect.height / H;
+
+      chLine.setAttribute('x1', xPos);
+      chLine.setAttribute('x2', xPos);
+      chLine.removeAttribute('display');
+      chDot.setAttribute('cx', xPos);
+      chDot.setAttribute('cy', yPos);
+      chDot.removeAttribute('display');
+
+      const date = new Date(stamps[idx] * 1000);
+      const dateStr = date.toLocaleDateString('en-NZ', { day:'numeric', month:'short', year:'numeric' });
+      tooltip.textContent = `${dateStr}  —  ${closes[idx].toFixed(2)}`;
+    });
+
+    svgWrap.addEventListener('mouseleave', () => {
+      chLine.setAttribute('display', 'none');
+      chDot.setAttribute('display', 'none');
+      tooltip.textContent = '';
+    });
+  });
 }
 
 function populatePriceTable(results) {
