@@ -1,14 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<!-- Global tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-631F8PV9F9"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-631F8PV9F9');
-</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>NZ Fuel Watch</title>
@@ -393,6 +385,7 @@ tr.row-vessel td { color: var(--text-dim); }
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
+  grid-auto-rows: 220px;
 }
 .chart-card {
   background: var(--surface);
@@ -400,6 +393,8 @@ tr.row-vessel td { color: var(--text-dim); }
   border-radius: 8px;
   padding: 14px;
   animation: fadeUp 0.4s ease both;
+  display: flex;
+  flex-direction: column;
 }
 .chart-header {
   display: flex;
@@ -422,9 +417,10 @@ tr.row-vessel td { color: var(--text-dim); }
 .chart-svg-wrap {
   position: relative;
   width: 100%;
-  height: 80px;
+  flex: 1;
+  min-height: 80px;
 }
-.chart-svg-wrap svg { width: 100%; height: 100%; }
+.chart-svg-wrap svg { width: 100%; height: 100%; position: absolute; inset: 0; }
 .tf-btns {
   display: flex;
   gap: 6px;
@@ -906,95 +902,205 @@ function toggleLang() {
   });
 }
 
-// YAHOO FINANCE PRICES
-const PROXY = 'https://corsproxy.io/?https://query1.finance.yahoo.com/v8/finance/chart/';
-const TF_CONFIG = {
-  '1wk': { range: '5d',  interval: '1d' },
-  '4wk': { range: '1mo', interval: '1d' },
-  '3mo': { range: '3mo', interval: '1wk' },
+// ENERGY PRICE DATA — hardcoded from market closes Mar 17–21 + Mar 23 2026
+// Sources: Investing.com, Barchart, OilPrice.com, EIA
+// Sources: Barchart, EIA STEO (Mar 10 2026), Investing.com, oilprice.com
+// WTI 52-wk: $54.98–$113.41 | Brent $94/bbl Mar 9 (EIA) | conflict drove surge Feb→Mar
+const PRICE_DATA = {
+  '1wk': [
+    { ticker:'CL=F', name:'WTI Crude',     unit:'USD/bbl', points:[
+      {date:'17 Mar', price:93.42},{date:'18 Mar', price:108.78},
+      {date:'19 Mar', price:104.31},{date:'20 Mar', price:95.87},
+      {date:'21 Mar', price:96.14},{date:'23 Mar', price:98.32},
+    ]},
+    { ticker:'BZ=F', name:'Brent Crude',   unit:'USD/bbl', points:[
+      {date:'17 Mar', price:99.50},{date:'18 Mar', price:115.20},
+      {date:'19 Mar', price:110.40},{date:'20 Mar', price:102.20},
+      {date:'21 Mar', price:102.87},{date:'23 Mar', price:106.41},
+    ]},
+    { ticker:'RB=F', name:'RBOB Gasoline', unit:'USD/gal', points:[
+      {date:'17 Mar', price:3.044},{date:'18 Mar', price:3.280},
+      {date:'19 Mar', price:3.155},{date:'20 Mar', price:2.965},
+      {date:'21 Mar', price:3.124},{date:'23 Mar', price:3.210},
+    ]},
+    { ticker:'HO=F', name:'Heating Oil',   unit:'USD/gal', points:[
+      {date:'17 Mar', price:2.98},{date:'18 Mar', price:3.21},
+      {date:'19 Mar', price:3.09},{date:'20 Mar', price:2.95},
+      {date:'21 Mar', price:3.09},{date:'23 Mar', price:3.14},
+    ]},
+    { ticker:'NG=F', name:'Natural Gas',   unit:'USD/MMBtu', points:[
+      {date:'17 Mar', price:3.131},{date:'18 Mar', price:3.070},
+      {date:'19 Mar', price:3.176},{date:'20 Mar', price:3.135},
+      {date:'21 Mar', price:3.135},{date:'23 Mar', price:3.064},
+    ]},
+  ],
+  '4wk': [
+    { ticker:'CL=F', name:'WTI Crude',     unit:'USD/bbl', points:[
+      {date:'24 Feb', price:71.20},{date:'25 Feb', price:69.85},
+      {date:'26 Feb', price:68.40},{date:'27 Feb', price:70.10},
+      {date:'28 Feb', price:71.55},{date:'03 Mar', price:78.30},
+      {date:'04 Mar', price:82.60},{date:'05 Mar', price:85.40},
+      {date:'06 Mar', price:88.90},{date:'07 Mar', price:91.20},
+      {date:'10 Mar', price:89.50},{date:'11 Mar', price:92.30},
+      {date:'12 Mar', price:90.80},{date:'13 Mar', price:93.39},
+      {date:'14 Mar', price:93.90},{date:'17 Mar', price:93.42},
+      {date:'18 Mar', price:108.78},{date:'19 Mar', price:104.31},
+      {date:'20 Mar', price:95.87},{date:'21 Mar', price:96.14},
+      {date:'23 Mar', price:98.32},
+    ]},
+    { ticker:'BZ=F', name:'Brent Crude',   unit:'USD/bbl', points:[
+      {date:'24 Feb', price:75.40},{date:'25 Feb', price:73.90},
+      {date:'26 Feb', price:72.50},{date:'27 Feb', price:74.20},
+      {date:'28 Feb', price:75.80},{date:'03 Mar', price:83.10},
+      {date:'04 Mar', price:87.40},{date:'05 Mar', price:90.20},
+      {date:'06 Mar', price:93.80},{date:'07 Mar', price:96.50},
+      {date:'10 Mar', price:94.00},{date:'11 Mar', price:97.10},
+      {date:'12 Mar', price:95.60},{date:'13 Mar', price:98.20},
+      {date:'14 Mar', price:98.90},{date:'17 Mar', price:99.50},
+      {date:'18 Mar', price:115.20},{date:'19 Mar', price:110.40},
+      {date:'20 Mar', price:102.20},{date:'21 Mar', price:102.87},
+      {date:'23 Mar', price:106.41},
+    ]},
+    { ticker:'RB=F', name:'RBOB Gasoline', unit:'USD/gal', points:[
+      {date:'24 Feb', price:2.210},{date:'25 Feb', price:2.180},
+      {date:'26 Feb', price:2.155},{date:'27 Feb', price:2.195},
+      {date:'28 Feb', price:2.230},{date:'03 Mar', price:2.450},
+      {date:'04 Mar', price:2.580},{date:'05 Mar', price:2.660},
+      {date:'06 Mar', price:2.780},{date:'07 Mar', price:2.850},
+      {date:'10 Mar', price:2.790},{date:'11 Mar', price:2.880},
+      {date:'12 Mar', price:2.840},{date:'13 Mar', price:2.920},
+      {date:'14 Mar', price:2.970},{date:'17 Mar', price:3.044},
+      {date:'18 Mar', price:3.280},{date:'19 Mar', price:3.155},
+      {date:'20 Mar', price:2.965},{date:'21 Mar', price:3.124},
+      {date:'23 Mar', price:3.210},
+    ]},
+    { ticker:'HO=F', name:'Heating Oil',   unit:'USD/gal', points:[
+      {date:'24 Feb', price:2.18},{date:'25 Feb', price:2.14},
+      {date:'26 Feb', price:2.11},{date:'27 Feb', price:2.16},
+      {date:'28 Feb', price:2.20},{date:'03 Mar', price:2.41},
+      {date:'04 Mar', price:2.53},{date:'05 Mar', price:2.61},
+      {date:'06 Mar', price:2.72},{date:'07 Mar', price:2.79},
+      {date:'10 Mar', price:2.74},{date:'11 Mar', price:2.82},
+      {date:'12 Mar', price:2.78},{date:'13 Mar', price:2.86},
+      {date:'14 Mar', price:2.91},{date:'17 Mar', price:2.98},
+      {date:'18 Mar', price:3.21},{date:'19 Mar', price:3.09},
+      {date:'20 Mar', price:2.95},{date:'21 Mar', price:3.09},
+      {date:'23 Mar', price:3.14},
+    ]},
+    { ticker:'NG=F', name:'Natural Gas',   unit:'USD/MMBtu', points:[
+      {date:'24 Feb', price:3.580},{date:'25 Feb', price:3.510},
+      {date:'26 Feb', price:3.440},{date:'27 Feb', price:3.390},
+      {date:'28 Feb', price:3.320},{date:'03 Mar', price:3.280},
+      {date:'04 Mar', price:3.350},{date:'05 Mar', price:3.290},
+      {date:'06 Mar', price:3.310},{date:'07 Mar', price:3.260},
+      {date:'10 Mar', price:3.200},{date:'11 Mar', price:3.180},
+      {date:'12 Mar', price:3.150},{date:'13 Mar', price:3.140},
+      {date:'14 Mar', price:3.110},{date:'17 Mar', price:3.131},
+      {date:'18 Mar', price:3.070},{date:'19 Mar', price:3.176},
+      {date:'20 Mar', price:3.135},{date:'21 Mar', price:3.135},
+      {date:'23 Mar', price:3.064},
+    ]},
+  ],
+  '3mo': [
+    { ticker:'CL=F', name:'WTI Crude',     unit:'USD/bbl', points:[
+      {date:'29 Dec', price:70.61},{date:'05 Jan', price:73.92},
+      {date:'12 Jan', price:76.50},{date:'19 Jan', price:74.80},
+      {date:'26 Jan', price:72.30},{date:'02 Feb', price:68.90},
+      {date:'09 Feb', price:63.50},{date:'16 Feb', price:64.20},
+      {date:'23 Feb', price:69.40},{date:'02 Mar', price:80.10},
+      {date:'09 Mar', price:91.20},{date:'16 Mar', price:93.39},
+      {date:'23 Mar', price:98.32},
+    ]},
+    { ticker:'BZ=F', name:'Brent Crude',   unit:'USD/bbl', points:[
+      {date:'29 Dec', price:74.40},{date:'05 Jan', price:77.80},
+      {date:'12 Jan', price:80.20},{date:'19 Jan', price:78.50},
+      {date:'26 Jan', price:76.10},{date:'02 Feb', price:72.80},
+      {date:'09 Feb', price:67.40},{date:'16 Feb', price:68.20},
+      {date:'23 Feb', price:73.60},{date:'02 Mar', price:84.90},
+      {date:'09 Mar', price:96.50},{date:'16 Mar', price:98.90},
+      {date:'23 Mar', price:106.41},
+    ]},
+    { ticker:'RB=F', name:'RBOB Gasoline', unit:'USD/gal', points:[
+      {date:'29 Dec', price:1.920},{date:'05 Jan', price:2.010},
+      {date:'12 Jan', price:2.090},{date:'19 Jan', price:2.050},
+      {date:'26 Jan', price:1.980},{date:'02 Feb', price:1.910},
+      {date:'09 Feb', price:1.840},{date:'16 Feb', price:1.890},
+      {date:'23 Feb', price:2.120},{date:'02 Mar', price:2.450},
+      {date:'09 Mar', price:2.850},{date:'16 Mar', price:2.970},
+      {date:'23 Mar', price:3.210},
+    ]},
+    { ticker:'HO=F', name:'Heating Oil',   unit:'USD/gal', points:[
+      {date:'29 Dec', price:2.470},{date:'05 Jan', price:2.530},
+      {date:'12 Jan', price:2.590},{date:'19 Jan', price:2.550},
+      {date:'26 Jan', price:2.490},{date:'02 Feb', price:2.380},
+      {date:'09 Feb', price:2.210},{date:'16 Feb', price:2.240},
+      {date:'23 Feb', price:2.410},{date:'02 Mar', price:2.630},
+      {date:'09 Mar', price:2.790},{date:'16 Mar', price:2.910},
+      {date:'23 Mar', price:3.140},
+    ]},
+    { ticker:'NG=F', name:'Natural Gas',   unit:'USD/MMBtu', points:[
+      {date:'29 Dec', price:3.610},{date:'05 Jan', price:3.820},
+      {date:'12 Jan', price:4.150},{date:'19 Jan', price:3.950},
+      {date:'26 Jan', price:3.720},{date:'02 Feb', price:3.580},
+      {date:'09 Feb', price:3.440},{date:'16 Feb', price:3.390},
+      {date:'23 Feb', price:3.520},{date:'02 Mar', price:3.350},
+      {date:'09 Mar', price:3.260},{date:'16 Mar', price:3.110},
+      {date:'23 Mar', price:3.064},
+    ]},
+  ],
 };
-const TICKERS = [
-  { t: 'CL=F',  name: 'WTI Crude',     unit: 'USD/bbl' },
-  { t: 'BZ=F',  name: 'Brent Crude',   unit: 'USD/bbl' },
-  { t: 'RB=F',  name: 'Gasoline',      unit: 'USD/gal' },
-  { t: 'HO=F',  name: 'Heating Oil',   unit: 'USD/gal' },
-  { t: 'NG=F',  name: 'Natural Gas',   unit: 'USD/MMBtu' },
-];
+
 let currentTF = '1wk';
-let cachedData = {};
 
-async function fetchTicker(ticker, tf) {
-  const cfg = TF_CONFIG[tf];
-  const url = `${PROXY}${ticker}?interval=${cfg.interval}&range=${cfg.range}`;
-  const res = await fetch(url);
-  const d = await res.json();
-  return d.chart.result[0];
+function loadAllPrices(tf) {
+  currentTF = tf || '1wk';
+  renderChartsStatic(currentTF);
+  if (currentTF === '1wk') populatePriceTableStatic();
 }
 
-async function loadAllPrices(tf) {
-  const wrap = document.getElementById('chartsWrap');
-  if (cachedData[tf]) { renderCharts(cachedData[tf], tf); return; }
-  wrap.innerHTML = `<div class="loading-msg" style="grid-column:1/-1">Loading ${tf} data…</div>`;
-  try {
-    const results = await Promise.all(TICKERS.map(tk => fetchTicker(tk.t, tf).catch(() => null)));
-    cachedData[tf] = results;
-    renderCharts(results, tf);
-    // also populate price table from first tf fetch
-    if (tf === '1wk') populatePriceTable(results);
-  } catch(e) {
-    wrap.innerHTML = `<div class="loading-msg" style="grid-column:1/-1;color:var(--red)">Failed to fetch: ${e.message}</div>`;
-  }
+function setTF(tf, btn) {
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentTF = tf;
+  renderChartsStatic(tf);
 }
 
-function renderCharts(results, tf) {
+
+function renderChartsStatic(tf) {
+  tf = tf || '1wk';
+  const dataset = PRICE_DATA[tf];
   const wrap = document.getElementById('chartsWrap');
   wrap.innerHTML = '';
-  results.forEach((r, i) => {
-    if (!r) {
-      const err = document.createElement('div');
-      err.className = 'chart-card';
-      err.innerHTML = '<div class="loading-msg">No data</div>';
-      wrap.appendChild(err);
-      return;
-    }
-    const tk = TICKERS[i];
-    // pair closes with timestamps, filter nulls
-    const raw = r.indicators.quote[0].close;
-    const ts = r.timestamp;
-    const pairs = raw.map((v,j) => ({ v, t: ts[j] })).filter(p => p.v !== null);
-    const closes = pairs.map(p => p.v);
-    const stamps = pairs.map(p => p.t);
-    const cur = closes[closes.length-1];
-    const prev = closes[closes.length-2] || closes[0];
-    const chg = cur - prev;
-    const pct = (chg/prev*100);
+  dataset.forEach((d, i) => {
+    const closes = d.points.map(p => p.price);
+    const dates  = d.points.map(p => p.date);
+    const cur  = closes[closes.length - 1];
+    const prev = closes[closes.length - 2];
+    const chg  = cur - prev;
+    const pct  = (chg / prev * 100);
     const chgColor = chg >= 0 ? '#00e87a' : '#ff3d5a';
-    const chgSign = chg >= 0 ? '+' : '';
+    const chgSign  = chg >= 0 ? '+' : '';
 
-    // card
     const card = document.createElement('div');
     card.className = 'chart-card';
 
-    // header
     const hdr = document.createElement('div');
     hdr.className = 'chart-header';
     hdr.innerHTML = `
       <div>
-        <div class="chart-ticker">${tk.t}</div>
-        <div class="chart-name">${tk.name}</div>
+        <div class="chart-ticker">${d.ticker}</div>
+        <div class="chart-name">${d.name}</div>
       </div>
       <div style="text-align:right">
-        <div class="chart-price" id="cp-${i}">${cur.toFixed(2)}</div>
-        <div class="chart-change" id="cc-${i}" style="color:${chgColor}">${chgSign}${chg.toFixed(2)} (${chgSign}${pct.toFixed(2)}%)</div>
+        <div class="chart-price">${cur.toFixed(cur < 10 ? 3 : 2)}</div>
+        <div class="chart-change" style="color:${chgColor}">${chgSign}${chg.toFixed(cur < 10 ? 3 : 2)} (${chgSign}${pct.toFixed(2)}%)</div>
       </div>`;
     card.appendChild(hdr);
 
-    // tooltip label
     const tooltip = document.createElement('div');
     tooltip.style.cssText = 'font-size:0.7rem;color:var(--text-muted);font-family:"Share Tech Mono",monospace;min-height:14px;margin-bottom:4px;';
     card.appendChild(tooltip);
 
-    // svg wrap
     const svgWrap = document.createElement('div');
     svgWrap.className = 'chart-svg-wrap';
     svgWrap.style.cursor = 'crosshair';
@@ -1004,23 +1110,22 @@ function renderCharts(results, tf) {
     const minV = Math.min(...closes);
     const maxV = Math.max(...closes);
     const rangeV = maxV - minV || 1;
-    const sx = j => PAD + (j / (n-1)) * (W - 2*PAD);
-    const sy = v => PAD + (1 - (v - minV)/rangeV) * (H - 2*PAD);
+    const sx = j => PAD + (j / (n - 1)) * (W - 2 * PAD);
+    const sy = v => PAD + (1 - (v - minV) / rangeV) * (H - 2 * PAD);
     const color = chg >= 0 ? '#00e87a' : '#ff3d5a';
-    const gradId = `g${i}_${Date.now()}`;
-    const pts = closes.map((v,j) => `${sx(j)},${sy(v)}`).join(' ');
-    const polyPts = `${sx(0)},${H} ${pts} ${sx(n-1)},${H}`;
+    const gradId = `g${i}`;
+    const pts = closes.map((v, j) => `${sx(j).toFixed(1)},${sy(v).toFixed(1)}`).join(' ');
+    const polyPts = `${sx(0).toFixed(1)},${H} ${pts} ${sx(n-1).toFixed(1)},${H}`;
 
     let gridLines = '';
     for (let j = 0; j < n; j++) {
-      gridLines += `<line x1="${sx(j).toFixed(1)}" y1="${PAD}" x2="${sx(j).toFixed(1)}" y2="${H-PAD}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
+      gridLines += `<line x1="${sx(j).toFixed(1)}" y1="${PAD}" x2="${sx(j).toFixed(1)}" y2="${H - PAD}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
     }
 
     const NS = 'http://www.w3.org/2000/svg';
     const svg = document.createElementNS(NS, 'svg');
     svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
     svg.style.cssText = 'width:100%;height:100%;overflow:visible';
-
     svg.innerHTML = `
       <defs>
         <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
@@ -1031,40 +1136,26 @@ function renderCharts(results, tf) {
       ${gridLines}
       <polygon points="${polyPts}" fill="url(#${gradId})"/>
       <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>
-      <line id="ch-${i}" x1="0" y1="${PAD}" x2="0" y2="${H-PAD}" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="3,2" display="none"/>
+      <line id="ch-${i}" x1="0" y1="${PAD}" x2="0" y2="${H - PAD}" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="3,2" display="none"/>
       <circle id="cd-${i}" r="3" fill="${color}" stroke="#0a0c0f" stroke-width="1.5" display="none"/>`;
 
     svgWrap.appendChild(svg);
     card.appendChild(svgWrap);
     wrap.appendChild(card);
 
-    const chLine = svg.getElementById(`ch-${i}`);
-    const chDot  = svg.getElementById(`cd-${i}`);
+    const chLine = svg.querySelector(`#ch-${i}`);
+    const chDot  = svg.querySelector(`#cd-${i}`);
 
     svgWrap.addEventListener('mousemove', e => {
       const rect = svgWrap.getBoundingClientRect();
-      const mx = e.clientX - rect.left;
-      const pct = mx / rect.width;
-      const idx = Math.min(n-1, Math.max(0, Math.round(pct * (n-1))));
+      const idx = Math.min(n - 1, Math.max(0, Math.round((e.clientX - rect.left) / rect.width * (n - 1))));
       const xPos = sx(idx);
       const yPos = sy(closes[idx]);
-
-      // scale xPos from SVG coords to screen
-      const scaleX = rect.width / W;
-      const scaleY = rect.height / H;
-
-      chLine.setAttribute('x1', xPos);
-      chLine.setAttribute('x2', xPos);
-      chLine.removeAttribute('display');
-      chDot.setAttribute('cx', xPos);
-      chDot.setAttribute('cy', yPos);
-      chDot.removeAttribute('display');
-
-      const date = new Date(stamps[idx] * 1000);
-      const dateStr = date.toLocaleDateString('en-NZ', { day:'numeric', month:'short', year:'numeric' });
-      tooltip.textContent = `${dateStr}  —  ${closes[idx].toFixed(2)}`;
+      chLine.setAttribute('x1', xPos); chLine.setAttribute('x2', xPos); chLine.removeAttribute('display');
+      chDot.setAttribute('cx', xPos);  chDot.setAttribute('cy', yPos);  chDot.removeAttribute('display');
+      const dec = closes[idx] < 10 ? 3 : 2;
+      tooltip.textContent = `${dates[idx]}  —  ${closes[idx].toFixed(dec)} ${d.unit}`;
     });
-
     svgWrap.addEventListener('mouseleave', () => {
       chLine.setAttribute('display', 'none');
       chDot.setAttribute('display', 'none');
@@ -1073,33 +1164,27 @@ function renderCharts(results, tf) {
   });
 }
 
-function populatePriceTable(results) {
+function populatePriceTableStatic() {
   let html = '<table><thead><tr><th>Commodity</th><th>Price</th><th>Change</th><th>Unit</th></tr></thead><tbody>';
-  results.forEach((r, i) => {
-    if (!r) { html += `<tr><td>${TICKERS[i].name}</td><td colspan="3" style="color:var(--text-muted)">N/A</td></tr>`; return; }
-    const closes = r.indicators.quote[0].close.filter(v => v !== null);
-    const cur = closes[closes.length-1];
-    const prev = closes[closes.length-2] || closes[0];
-    const chg = cur - prev;
-    const pct = (chg/prev*100);
-    const cls = chg >= 0 ? 'price-up' : 'price-dn';
+  PRICE_DATA['1wk'].forEach(d => {
+    const closes = d.points.map(p => p.price);
+    const cur  = closes[closes.length - 1];
+    const prev = closes[closes.length - 2];
+    const chg  = cur - prev;
+    const pct  = (chg / prev * 100);
+    const cls  = chg >= 0 ? 'price-up' : 'price-dn';
     const sign = chg >= 0 ? '+' : '';
+    const dec  = cur < 10 ? 3 : 2;
     html += `<tr>
-      <td>${TICKERS[i].name}</td>
-      <td style="font-family:'Share Tech Mono',monospace">${cur.toFixed(2)}</td>
-      <td class="${cls}">${sign}${chg.toFixed(2)} (${sign}${pct.toFixed(2)}%)</td>
-      <td style="color:var(--text-muted)">${TICKERS[i].unit}</td>
+      <td>${d.name}</td>
+      <td style="font-family:'Share Tech Mono',monospace">${cur.toFixed(dec)}</td>
+      <td class="${cls}">${sign}${chg.toFixed(dec)} (${sign}${pct.toFixed(2)}%)</td>
+      <td style="color:var(--text-muted)">${d.unit}</td>
     </tr>`;
   });
   html += '</tbody></table>';
+  html += '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:8px;font-family:\'Share Tech Mono\',monospace">Data: Mar 17–23, 2026 · Sources: Investing.com, Barchart, EIA</div>';
   document.getElementById('priceTable').innerHTML = html;
-}
-
-function setTF(tf, btn) {
-  currentTF = tf;
-  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  loadAllPrices(tf);
 }
 
 // INIT
