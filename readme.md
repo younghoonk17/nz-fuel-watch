@@ -10,3 +10,6 @@ This is my analytic header
     gtag('config', 'G-631F8PV9F9');
   </script>
 </head>
+
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5357351749773416"
+     crossorigin="anonymous"></script>
