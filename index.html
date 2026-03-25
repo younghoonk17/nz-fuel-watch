@@ -363,8 +363,6 @@ tr.row-buffer td { color: var(--green); }
 tr.row-vessel td { color: var(--text-dim); }
 
 /* COMMODITY TABLE */
-.price-up { color: var(--green); }
-.price-dn { color: var(--red); }
 
 /* IEA PANEL */
 .iea-panel {
@@ -381,88 +379,6 @@ tr.row-vessel td { color: var(--text-dim); }
   color: var(--text-muted);
   margin-bottom: 16px;
 }
-
-/* CHARTS */
-.charts-wrap {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-  grid-auto-rows: 220px;
-}
-.chart-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px;
-  animation: fadeUp 0.4s ease both;
-  display: flex;
-  flex-direction: column;
-}
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin-bottom: 10px;
-}
-.chart-ticker {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.88rem;
-  color: var(--text-muted);
-}
-.chart-price {
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 1.1rem;
-  color: var(--text);
-}
-.chart-change { font-size: 0.78rem; }
-.chart-name { font-size: 0.82rem; color: var(--text-dim); margin-top: 2px; }
-.chart-svg-wrap {
-  position: relative;
-  width: 100%;
-  flex: 1;
-  min-height: 80px;
-}
-.chart-svg-wrap svg { width: 100%; height: 100%; position: absolute; inset: 0; }
-.tf-btns {
-  display: flex;
-  gap: 6px;
-  margin-top: 8px;
-}
-.tf-btn {
-  background: var(--surface2);
-  border: 1px solid var(--border2);
-  color: var(--text-muted);
-  padding: 3px 8px;
-  border-radius: 3px;
-  font-size: 0.7rem;
-  cursor: pointer;
-  font-family: 'Share Tech Mono', monospace;
-  transition: all 0.15s;
-}
-.tf-btn.active { background: var(--amber); color: #000; border-color: var(--amber); }
-.loading-msg { color: var(--text-muted); font-size: 0.78rem; font-family: 'Share Tech Mono', monospace; padding: 16px 0; text-align: center; }
-
-/* ASSESSMENT */
-.assess-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 14px;
-}
-.assess-card {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 18px;
-  animation: fadeUp 0.4s ease both;
-}
-.assess-card h4 {
-  font-size: 0.78rem;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 12px;
-}
-.assess-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; }
 
 /* GASPY */
 .gaspy-wrap {
@@ -492,6 +408,28 @@ tr.row-vessel td { color: var(--text-dim); }
   display: none;
 }
 
+/* ASSESSMENT */
+.assess-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.assess-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 18px;
+  animation: fadeUp 0.4s ease both;
+}
+.assess-card h4 {
+  font-size: 0.98rem;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+.assess-card p { font-size: 0.85rem; color: var(--text-dim); line-height: 1.65; }
+
 /* FOOTER */
 footer {
   text-align: center;
@@ -507,13 +445,11 @@ footer a { color: var(--accent); text-decoration: none; }
   .phase-grid { grid-template-columns: repeat(2, 1fr); }
   .fuel-grid { grid-template-columns: repeat(2, 1fr); }
   .two-col { grid-template-columns: 1fr; }
-  .charts-wrap { grid-template-columns: repeat(2, 1fr); }
   .assess-grid { grid-template-columns: repeat(2, 1fr); }
   .total-panel { grid-template-columns: 1fr; }
 }
 @media (max-width: 600px) {
   .fuel-grid { grid-template-columns: 1fr; }
-  .charts-wrap { grid-template-columns: 1fr; }
   .assess-grid { grid-template-columns: 1fr; }
 }
 .section-label {
@@ -535,7 +471,7 @@ footer a { color: var(--accent); text-decoration: none; }
   </div>
   <div class="header-right">
     <button id="langToggle" onclick="toggleLang()">한국어</button>
-    <span data-t="updated" data-en="Updated: 23 Mar 2026" data-ko="업데이트: 2026년 3월 23일">Updated: 23 Mar 2026</span>
+    <span data-t="updated" data-en="Updated: 25 Mar 2026" data-ko="업데이트: 2026년 3월 25일">Updated: 25 Mar 2026</span>
     <span class="phase-badge">PHASE 1 — MINOR</span>
   </div>
 </header>
@@ -545,34 +481,30 @@ footer a { color: var(--accent); text-decoration: none; }
   <div class="ticker-inner" id="tickerInner">
     <span class="ticker-item">
       <span class="live-badge">LIVE</span>
-      <span data-t="t1" data-en="⛽ Petrol: 49.9d total (onshore + on-water)" data-ko="⛽ 휘발유: 총 49.9일 (국내 + 해상)">⛽ Petrol: 49.9d total (onshore + on-water)</span>
+      <span data-t="t1" data-en="⛽ Petrol: 48.7d total (onshore + on-water)" data-ko="⛽ 휘발유: 총 48.7일 (국내 + 해상)">⛽ Petrol: 48.7d total (onshore + on-water)</span>
       <span class="sep">|</span>
-      <span data-t="t2" data-en="🚛 Diesel: 45.5d total (onshore + on-water)" data-ko="🚛 경유: 총 45.5일 (국내 + 해상)">🚛 Diesel: 45.5d total (onshore + on-water)</span>
+      <span data-t="t2" data-en="🚛 Diesel: 46.4d total (onshore + on-water)" data-ko="🚛 경유: 총 46.4일 (국내 + 해상)">🚛 Diesel: 46.4d total (onshore + on-water)</span>
       <span class="sep">|</span>
-      <span data-t="t3" data-en="✈️ Jet Fuel: 44.7d total (onshore + on-water)" data-ko="✈️ 항공유: 총 44.7일 (국내 + 해상)">✈️ Jet Fuel: 44.7d total (onshore + on-water)</span>
+      <span data-t="t3" data-en="✈️ Jet Fuel: 43.4d total (onshore + on-water)" data-ko="✈️ 항공유: 총 43.4일 (국내 + 해상)">✈️ Jet Fuel: 43.4d total (onshore + on-water)</span>
       <span class="sep">|</span>
-      <span data-t="t4" data-en="📦 Combined total: ~46d nationwide" data-ko="📦 전체 합산: 전국 약 46일">📦 Combined total: ~46d nationwide</span>
+      <span data-t="t4" data-en="📦 Combined total: ~46.6d nationwide" data-ko="📦 전체 합산: 전국 약 46.6일">📦 Combined total: ~46.6d nationwide</span>
       <span class="sep">|</span>
-      <span data-t="t5" data-en="🚢 8 vessels by Apr 1 — Mar 19–25: 7 vessels (20d petrol, 16d diesel, 12d jet) | Mar 26–Apr 1: 1 vessel (4d diesel, 10d jet, no petrol)" data-ko="🚢 4월 1일까지 8척 — 3월 19~25일: 7척 (휘발유 20일, 경유 16일, 항공유 12일) | 3월 26일~4월 1일: 1척 (경유 4일, 항공유 10일, 휘발유 없음)">🚢 8 vessels by Apr 1 — Mar 19–25: 7 vessels (20d petrol, 16d diesel, 12d jet) | Mar 26–Apr 1: 1 vessel (4d diesel, 10d jet, no petrol)</span>
-      <span class="sep">|</span>
-      <span data-t="t6" data-en="🌐 IEA Collective Action: 400M bbl release activated 11 Mar 2026" data-ko="🌐 IEA 공동조치: 2026년 3월 11일 4억 배럴 방출 발동">🌐 IEA Collective Action: 400M bbl release activated 11 Mar 2026</span>
+      <span data-t="t5" data-en="🚢 2 vessels by Apr 5 — Mar 23–29: 1 vessel (4.4d petrol, 2d jet) | Mar 30–Apr 5: 1 vessel (1.3d petrol, 7.2d diesel, 11.6d jet)" data-ko="🚢 4월 5일까지 2척 — 3월 23~29일: 1척 (휘발유 4.4일, 항공유 2일) | 3월 30일~4월 5일: 1척 (휘발유 1.3일, 경유 7.2일, 항공유 11.6일)">🚢 2 vessels by Apr 5 — Mar 23–29: 1 vessel (4.4d petrol, 2d jet) | Mar 30–Apr 5: 1 vessel (1.3d petrol, 7.2d diesel, 11.6d jet)</span>
       <span class="sep">|</span>
       <span data-t="t7" data-en="📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓" data-ko="📍 MSO 기준: 휘발유 28일 ✓ | 경유 21일 ✓ | 항공유 24일 ✓">📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓</span>
     </span>
     <!-- duplicate for seamless loop -->
     <span class="ticker-item">
       <span class="live-badge">LIVE</span>
-      <span data-t="t1" data-en="⛽ Petrol: 49.9d total (onshore + on-water)" data-ko="⛽ 휘발유: 총 49.9일 (국내 + 해상)">⛽ Petrol: 49.9d total (onshore + on-water)</span>
+      <span data-t="t1" data-en="⛽ Petrol: 48.7d total (onshore + on-water)" data-ko="⛽ 휘발유: 총 48.7일 (국내 + 해상)">⛽ Petrol: 48.7d total (onshore + on-water)</span>
       <span class="sep">|</span>
-      <span data-t="t2" data-en="🚛 Diesel: 45.5d total (onshore + on-water)" data-ko="🚛 경유: 총 45.5일 (국내 + 해상)">🚛 Diesel: 45.5d total (onshore + on-water)</span>
+      <span data-t="t2" data-en="🚛 Diesel: 46.4d total (onshore + on-water)" data-ko="🚛 경유: 총 46.4일 (국내 + 해상)">🚛 Diesel: 46.4d total (onshore + on-water)</span>
       <span class="sep">|</span>
-      <span data-t="t3" data-en="✈️ Jet Fuel: 44.7d total (onshore + on-water)" data-ko="✈️ 항공유: 총 44.7일 (국내 + 해상)">✈️ Jet Fuel: 44.7d total (onshore + on-water)</span>
+      <span data-t="t3" data-en="✈️ Jet Fuel: 43.4d total (onshore + on-water)" data-ko="✈️ 항공유: 총 43.4일 (국내 + 해상)">✈️ Jet Fuel: 43.4d total (onshore + on-water)</span>
       <span class="sep">|</span>
-      <span data-t="t4" data-en="📦 Combined total: ~46d nationwide" data-ko="📦 전체 합산: 전국 약 46일">📦 Combined total: ~46d nationwide</span>
+      <span data-t="t4" data-en="📦 Combined total: ~46.6d nationwide" data-ko="📦 전체 합산: 전국 약 46.6일">📦 Combined total: ~46.6d nationwide</span>
       <span class="sep">|</span>
-      <span data-t="t5" data-en="🚢 8 vessels by Apr 1 — Mar 19–25: 7 vessels (20d petrol, 16d diesel, 12d jet) | Mar 26–Apr 1: 1 vessel (4d diesel, 10d jet, no petrol)" data-ko="🚢 4월 1일까지 8척 — 3월 19~25일: 7척 (휘발유 20일, 경유 16일, 항공유 12일) | 3월 26일~4월 1일: 1척 (경유 4일, 항공유 10일, 휘발유 없음)">🚢 8 vessels by Apr 1 — Mar 19–25: 7 vessels (20d petrol, 16d diesel, 12d jet) | Mar 26–Apr 1: 1 vessel (4d diesel, 10d jet, no petrol)</span>
-      <span class="sep">|</span>
-      <span data-t="t6" data-en="🌐 IEA Collective Action: 400M bbl release activated 11 Mar 2026" data-ko="🌐 IEA 공동조치: 2026년 3월 11일 4억 배럴 방출 발동">🌐 IEA Collective Action: 400M bbl release activated 11 Mar 2026</span>
+      <span data-t="t5" data-en="🚢 2 vessels by Apr 5 — Mar 23–29: 1 vessel (4.4d petrol, 2d jet) | Mar 30–Apr 5: 1 vessel (1.3d petrol, 7.2d diesel, 11.6d jet)" data-ko="🚢 4월 5일까지 2척 — 3월 23~29일: 1척 (휘발유 4.4일, 항공유 2일) | 3월 30일~4월 5일: 1척 (휘발유 1.3일, 경유 7.2일, 항공유 11.6일)">🚢 2 vessels by Apr 5 — Mar 23–29: 1 vessel (4.4d petrol, 2d jet) | Mar 30–Apr 5: 1 vessel (1.3d petrol, 7.2d diesel, 11.6d jet)</span>
       <span class="sep">|</span>
       <span data-t="t7" data-en="📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓" data-ko="📍 MSO 기준: 휘발유 28일 ✓ | 경유 21일 ✓ | 항공유 24일 ✓">📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓</span>
     </span>
@@ -580,6 +512,25 @@ footer a { color: var(--accent); text-decoration: none; }
 </div>
 
 <div class="container">
+
+  <!-- ASSESSMENT -->
+  <div class="section">
+    <div class="section-label" data-t="assess_label" data-en="Current Situation Assessment" data-ko="현황 평가">Current Situation Assessment</div>
+    <div class="assess-grid">
+      <div class="assess-card">
+        <h4 data-t="short_term" data-en="Short Term" data-ko="단기 전망">Short Term</h4>
+        <p data-t="short_term_txt" data-en="While stocks are healthy overall, onshore levels have dipped below MSO minimums for the first time in the crisis, now relying on on-water stocks in the EEZ to meet legal obligations. MBIE assessed the situation as Phase 1 (Minor) as of 22 March 2026. 2 vessels are scheduled to arrive within 2 weeks." data-ko="전체 재고는 양호하지만, 위기 발생 후 처음으로 국내 재고가 MSO 최소 기준 아래로 떨어졌습니다. 현재 법적 의무 충족을 위해 EEZ 내 해상 재고에 의존하고 있습니다. MBIE는 2026년 3월 22일 기준 1단계(경미)를 유지했습니다. 향후 2주 내 2척이 입항 예정입니다.">While stocks are healthy overall, onshore levels have dipped below MSO minimums for the first time in the crisis, now relying on on-water stocks in the EEZ to meet legal obligations. MBIE assessed the situation as Phase 1 (Minor) as of 22 March 2026. 2 vessels are scheduled to arrive within 2 weeks.</p>
+      </div>
+      <div class="assess-card">
+        <h4 data-t="watch_points" data-en="Watch Points" data-ko="주의 사항">Watch Points</h4>
+        <p data-t="watch_points_txt" data-en="Onshore buffer for all fuels is now negative. The Mar 23–29 window shows only 1 vessel with no diesel. This creates a reliance on the 30 Mar – 5 Apr window which brings substantial diesel and jet fuel (18.8d combined) to restore onshore levels. Tight monitoring of arrivals is required." data-ko="모든 연료의 국내 재고 여유분이 마이너스로 전환되었습니다. 3월 23~29일 기간에는 경유 선박 없이 1척만 입항합니다. 이에 따라 3월 30일~4월 5일 기간의 대규모 경유 및 항공유 보충(합산 18.8일분)이 국내 재고 회복에 핵심적인 상황입니다.">Onshore buffer for all fuels is now negative. The Mar 23–29 window shows only 1 vessel with no diesel. This creates a reliance on the 30 Mar – 5 Apr window which brings substantial diesel and jet fuel (18.8d combined) to restore onshore levels. Tight monitoring of arrivals is required.</p>
+      </div>
+      <div class="assess-card">
+        <h4 data-t="global_ctx" data-en="Global Context" data-ko="글로벌 맥락">Global Context</h4>
+        <p data-t="global_ctx_txt" data-en="IEA 400M bbl collective action is active. Brent crude remains around US$88/bbl. NZ is fulfilling obligations via oil tickets. Retail fuel prices remain elevated but stable. Shipping disruptions in the Middle East continue to be the primary risk factor. No panic buying reported." data-ko="IEA 4억 배럴 공동조치가 발동 중입니다. 브렌트유는 88달러 선을 유지하고 있습니다. NZ는 오일 티켓으로 의무를 이행 중입니다. 소매 연료 가격은 높은 수준에서 안정세입니다. 중동 지역의 해상 운송 차질이 여전히 주요 위험 요소입니다.">IEA 400M bbl collective action is active. Brent crude remains around US$88/bbl. NZ is fulfilling obligations via oil tickets. Retail fuel prices remain elevated but stable. Shipping disruptions in the Middle East continue to be the primary risk factor. No panic buying reported.</p>
+      </div>
+    </div>
+  </div>
 
   <!-- PHASE PANEL -->
   <div class="section">
@@ -614,18 +565,18 @@ footer a { color: var(--accent); text-decoration: none; }
 
   <!-- FUEL TILES -->
   <div class="section">
-    <div class="section-label" data-t="stocks_label" data-en="Fuel Stock Levels — As at 11:59PM Wednesday 18 March 2026" data-ko="연료 재고 현황 — 2026년 3월 18일 수요일 자정 기준">Fuel Stock Levels — As at 11:59PM Wednesday 18 March 2026</div>
+    <div class="section-label" data-t="stocks_label" data-en="Fuel Stock Levels — As at 11:59PM Sunday 22 March 2026" data-ko="연료 재고 현황 — 2026년 3월 22일 일요일 자정 기준">Fuel Stock Levels — As at 11:59PM Sunday 22 March 2026</div>
     <div class="fuel-grid">
       <div class="fuel-tile">
         <h3 data-t="petrol" data-en="⛽ PETROL" data-ko="⛽ 휘발유">⛽ PETROL</h3>
-        <div class="total-days" style="color:var(--green)">49.9<span style="font-size:1.2rem">d</span></div>
+        <div class="total-days" style="color:var(--green)">48.7<span style="font-size:1.2rem">d</span></div>
         <div class="stock-row">
           <span class="stock-label" data-t="onshore" data-en="Onshore" data-ko="국내 재고">Onshore</span>
-          <span class="onshore">28.1d</span>
+          <span class="onshore">24.5d</span>
         </div>
         <div class="stock-row">
           <span class="stock-label" data-t="onwater" data-en="On-water" data-ko="해상 재고">On-water</span>
-          <span class="onwater">23.3d</span>
+          <span class="onwater">24.2d</span>
         </div>
         <div class="stock-row">
           <span class="stock-label" data-t="mso_req" data-en="MSO Required" data-ko="최소의무비축">MSO Required</span>
@@ -634,14 +585,14 @@ footer a { color: var(--accent); text-decoration: none; }
       </div>
       <div class="fuel-tile">
         <h3 data-t="diesel" data-en="🚛 DIESEL" data-ko="🚛 경유">🚛 DIESEL</h3>
-        <div class="total-days" style="color:var(--green)">45.5<span style="font-size:1.2rem">d</span></div>
+        <div class="total-days" style="color:var(--green)">46.4<span style="font-size:1.2rem">d</span></div>
         <div class="stock-row">
           <span class="stock-label" data-t="onshore" data-en="Onshore" data-ko="국내 재고">Onshore</span>
-          <span class="onshore">22.7d</span>
+          <span class="onshore">18.1d</span>
         </div>
         <div class="stock-row">
           <span class="stock-label" data-t="onwater" data-en="On-water" data-ko="해상 재고">On-water</span>
-          <span class="onwater">24.3d</span>
+          <span class="onwater">28.3d</span>
         </div>
         <div class="stock-row">
           <span class="stock-label" data-t="mso_req" data-en="MSO Required" data-ko="최소의무비축">MSO Required</span>
@@ -650,10 +601,10 @@ footer a { color: var(--accent); text-decoration: none; }
       </div>
       <div class="fuel-tile">
         <h3 data-t="jetfuel" data-en="✈️ JET FUEL" data-ko="✈️ 항공유">✈️ JET FUEL</h3>
-        <div class="total-days" style="color:var(--green)">44.7<span style="font-size:1.2rem">d</span></div>
+        <div class="total-days" style="color:var(--green)">43.4<span style="font-size:1.2rem">d</span></div>
         <div class="stock-row">
           <span class="stock-label" data-t="onshore" data-en="Onshore" data-ko="국내 재고">Onshore</span>
-          <span class="onshore">25.6d</span>
+          <span class="onshore">20.1d</span>
         </div>
         <div class="stock-row">
           <span class="stock-label" data-t="onwater" data-en="On-water" data-ko="해상 재고">On-water</span>
@@ -675,35 +626,35 @@ footer a { color: var(--accent); text-decoration: none; }
     <div class="panel">
       <h3 data-t="gauge_title" data-en="Onshore Stock vs Minimum Obligation" data-ko="국내 재고 vs 최소의무비축 비교">Onshore Stock vs Minimum Obligation</h3>
       <div class="gauge-wrap">
-        <!-- Petrol: onshore 28.1, max scale ~40 -->
+        <!-- Petrol: onshore 24.5, max scale ~40 -->
         <div class="gauge-row">
           <div class="gauge-label" data-t="petrol" data-en="Petrol" data-ko="휘발유">Petrol</div>
           <div class="gauge-bar-bg">
-            <div class="gauge-bar-fill" style="width:70.25%"></div>
+            <div class="gauge-bar-fill" style="width:61.25%"></div>
             <!-- MSO 28/40 = 70% marker -->
             <div class="gauge-min-line" style="left:70%"></div>
           </div>
-          <div class="gauge-val">28.1d</div>
+          <div class="gauge-val">24.5d</div>
         </div>
-        <!-- Diesel: onshore 22.7, min 21, scale 40 -->
+        <!-- Diesel: onshore 18.1, min 21, scale 40 -->
         <div class="gauge-row">
           <div class="gauge-label" data-t="diesel" data-en="Diesel" data-ko="경유">Diesel</div>
           <div class="gauge-bar-bg">
-            <div class="gauge-bar-fill" style="width:56.75%"></div>
+            <div class="gauge-bar-fill" style="width:45.25%"></div>
             <!-- MSO 21/40 = 52.5% -->
             <div class="gauge-min-line" style="left:52.5%"></div>
           </div>
-          <div class="gauge-val">22.7d</div>
+          <div class="gauge-val">18.1d</div>
         </div>
-        <!-- Jet: onshore 25.6, min 24, scale 40 -->
+        <!-- Jet: onshore 20.1, min 24, scale 40 -->
         <div class="gauge-row">
           <div class="gauge-label" data-t="jetfuel" data-en="Jet Fuel" data-ko="항공유">Jet Fuel</div>
           <div class="gauge-bar-bg">
-            <div class="gauge-bar-fill" style="width:64%"></div>
+            <div class="gauge-bar-fill" style="width:50.25%"></div>
             <!-- MSO 24/40 = 60% -->
             <div class="gauge-min-line" style="left:60%"></div>
           </div>
-          <div class="gauge-val">25.6d</div>
+          <div class="gauge-val">20.1d</div>
         </div>
       </div>
       <div style="font-size:0.72rem;color:var(--text-muted);margin-bottom:12px">
@@ -713,7 +664,7 @@ footer a { color: var(--accent); text-decoration: none; }
       <div class="status-rows">
         <div class="status-row">
           <span class="status-key" data-t="mso_status" data-en="MSO Compliance" data-ko="MSO 준수 여부">MSO Compliance</span>
-          <span class="status-val ok" data-t="all_met" data-en="ALL MET ✓" data-ko="전체 충족 ✓">ALL MET ✓</span>
+          <span class="status-val warn" data-t="all_met" data-en="MET via EEZ" data-ko="EEZ 포함 충족">MET via EEZ</span>
         </div>
         <div class="status-row">
           <span class="status-key" data-t="nfp_phase" data-en="National Fuel Plan" data-ko="국가연료계획 단계">National Fuel Plan</span>
@@ -745,15 +696,15 @@ footer a { color: var(--accent); text-decoration: none; }
         <tbody>
           <tr class="row-onshore">
             <td data-t="onshore" data-en="Onshore" data-ko="국내 재고">Onshore</td>
-            <td>28.1d</td><td>22.7d</td><td>25.6d</td>
+            <td>24.5d</td><td>18.1d</td><td>20.1d</td>
           </tr>
           <tr class="row-onwater">
             <td data-t="onwater" data-en="On-water" data-ko="해상 재고">On-water</td>
-            <td>23.3d</td><td>24.3d</td><td>23.4d</td>
+            <td>24.2d</td><td>28.3d</td><td>23.4d</td>
           </tr>
           <tr class="row-total">
             <td data-t="total" data-en="Total" data-ko="합계">Total</td>
-            <td>49.9d</td><td>45.5d</td><td>44.7d</td>
+            <td>48.7d</td><td>46.4d</td><td>43.4d</td>
           </tr>
           <tr class="row-mso">
             <td data-t="mso" data-en="MSO Min." data-ko="최소의무">MSO Min.</td>
@@ -761,7 +712,7 @@ footer a { color: var(--accent); text-decoration: none; }
           </tr>
           <tr class="row-buffer">
             <td data-t="buffer" data-en="Buffer" data-ko="여유분">Buffer</td>
-            <td>+0.1d</td><td>+1.7d</td><td>+1.6d</td>
+            <td style="color:var(--red)">-3.5d</td><td style="color:var(--red)">-2.9d</td><td style="color:var(--red)">-3.9d</td>
           </tr>
         </tbody>
       </table>
@@ -780,85 +731,26 @@ footer a { color: var(--accent); text-decoration: none; }
           </thead>
           <tbody>
             <tr class="row-vessel">
-              <td>Mar 19–25</td><td>7</td><td>20d</td><td>16d</td><td>12d</td>
+              <td>Mar 23–29</td><td>1</td><td>4.4d</td><td>0d</td><td>2d</td>
             </tr>
             <tr class="row-vessel">
-              <td>Mar 26–Apr 1</td><td>1</td><td style="color:var(--text-muted)">—</td><td>4d</td><td>10d</td>
+              <td>Mar 30–Apr 5</td><td>1</td><td>1.3d</td><td>7.2d</td><td>11.6d</td>
             </tr>
           </tbody>
         </table>
-        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px" data-t="vessels_note" data-en="Excludes shipments >2 weeks out. Source: MBIE 23 Mar 2026." data-ko="2주 초과 선박 제외. 출처: MBIE 2026년 3월 23일.">Excludes shipments >2 weeks out. Source: MBIE 23 Mar 2026.</div>
+        <div style="font-size:0.72rem;color:var(--text-muted);margin-top:8px" data-t="vessels_note" data-en="Excludes shipments >2 weeks out. Source: MBIE 25 Mar 2026." data-ko="2주 초과 선박 제외. 출처: MBIE 2026년 3월 25일.">Excludes shipments >2 weeks out. Source: MBIE 25 Mar 2026.</div>
       </div>
     </div>
   </div>
 
-  <!-- COMMODITY PRICES + IEA -->
-  <div class="section two-col">
-    <!-- COMMODITY PRICES -->
-    <div class="panel">
-      <h3 data-t="commodity_title" data-en="Energy Commodity Prices (Live)" data-ko="에너지 원자재 시세 (실시간)">Energy Commodity Prices (Live)</h3>
-      <div id="priceTable"><div class="loading-msg" data-t="loading" data-en="Fetching live prices..." data-ko="실시간 시세 불러오는 중...">Fetching live prices...</div></div>
-    </div>
-
-    <!-- IEA PANEL -->
-    <div class="panel iea-panel">
-      <h3 data-t="iea_title" data-en="IEA Collective Action" data-ko="IEA 공동조치">IEA Collective Action</h3>
-      <div class="iea-big">400M <span style="font-size:1.2rem">bbl</span></div>
-      <div class="iea-sub" data-t="iea_desc" data-en="Global strategic oil reserve release to stabilise supply" data-ko="전 세계 비축유 방출로 공급 안정화">Global strategic oil reserve release to stabilise supply</div>
-      <div class="status-rows">
-        <div class="status-row">
-          <span class="status-key" data-t="activated" data-en="Activated" data-ko="발동일">Activated</span>
-          <span class="status-val warn">11 Mar 2026</span>
-        </div>
-        <div class="status-row">
-          <span class="status-key" data-t="cause" data-en="Cause" data-ko="발동 원인">Cause</span>
-          <span class="status-val" data-t="cause_val" data-en="Middle East conflict" data-ko="중동 분쟁">Middle East conflict</span>
-        </div>
-        <div class="status-row">
-          <span class="status-key" data-t="effect" data-en="Purpose" data-ko="목적">Purpose</span>
-          <span class="status-val" data-t="effect_val" data-en="Refinery crude access" data-ko="정유소 원유 공급 지원">Refinery crude access</span>
-        </div>
-        <div class="status-row">
-          <span class="status-key" data-t="nz_obligation" data-en="NZ Obligation" data-ko="NZ 의무">NZ Obligation</span>
-          <span class="status-val ok" data-t="nz_ob_val" data-en="Oil tickets released ✓" data-ko="오일 티켓 방출 완료 ✓">Oil tickets released ✓</span>
-        </div>
-        <div class="status-row">
-          <span class="status-key" data-t="iea_90" data-en="IEA 90-day total" data-ko="IEA 90일 의무">IEA 90-day total</span>
-          <span class="status-val ok" data-t="iea_90_val" data-en="MET via onshore + oil tickets" data-ko="국내 재고 + 오일 티켓으로 충족">MET via onshore + oil tickets</span>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- PRICE CHARTS -->
+  <!-- CRUDE OIL PRICE -->
   <div class="section">
-    <div class="section-label" data-t="charts_label" data-en="Energy Price Charts" data-ko="에너지 가격 추이 차트">Energy Price Charts</div>
-    <div class="charts-wrap" id="chartsWrap">
-      <div class="loading-msg" style="grid-column:1/-1" data-t="charts_loading" data-en="Loading price charts..." data-ko="차트 불러오는 중...">Loading price charts...</div>
-    </div>
-    <div class="tf-btns" id="tfBtns" style="margin-top:12px;justify-content:center">
-      <button class="tf-btn active" onclick="setTF('1wk',this)">1 Week</button>
-      <button class="tf-btn" onclick="setTF('4wk',this)">4 Weeks</button>
-      <button class="tf-btn" onclick="setTF('3mo',this)">3 Months</button>
-    </div>
-  </div>
-
-  <!-- ASSESSMENT -->
-  <div class="section">
-    <div class="section-label" data-t="assess_label" data-en="Current Situation Assessment" data-ko="현황 평가">Current Situation Assessment</div>
-    <div class="assess-grid">
-      <div class="assess-card">
-        <h4 data-t="short_term" data-en="Short Term" data-ko="단기 전망">Short Term</h4>
-        <p data-t="short_term_txt" data-en="All fuel types remain above MSO minimums. Combined nationwide cover is ~49 days. MBIE assessed the situation as Phase 1 (Minor) as of 20 March 2026. 11 vessels are scheduled to arrive within 2 weeks, bringing substantial new stock." data-ko="모든 연료 유형이 MSO 최소 기준 이상입니다. 전국 합산 공급 가능 일수는 약 49일입니다. MBIE는 2026년 3월 20일 기준 1단계(경미)로 평가했습니다. 2주 내 11척이 입항 예정으로 상당한 물량이 보충됩니다.">All fuel types remain above MSO minimums. Combined nationwide cover is ~49 days. MBIE assessed the situation as Phase 1 (Minor) as of 20 March 2026. 11 vessels are scheduled to arrive within 2 weeks, bringing substantial new stock.</p>
+    <div class="gaspy-wrap">
+      <div class="gaspy-header">
+        <span data-t="crude_title" data-en="Crude Oil Price — Trading Economics" data-ko="원유 가격 — Trading Economics">Crude Oil Price — Trading Economics</span>
+        <a href="https://tradingeconomics.com/commodity/crude-oil" target="_blank" style="color:var(--accent);font-size:0.75rem">tradingeconomics.com ↗</a>
       </div>
-      <div class="assess-card">
-        <h4 data-t="watch_points" data-en="Watch Points" data-ko="주의 사항">Watch Points</h4>
-        <p data-t="watch_points_txt" data-en="The Strait of Hormuz disruption continues to affect crude supply to Asian refineries. Onshore petrol buffer above MSO is thin (+0.1d). The Mar 23–29 vessel window shows only 1 petrol cargo with no diesel or jet fuel — a critical gap to monitor as MBIE updates data on 25 March." data-ko="호르무즈 해협 분쟁이 아시아 정유소의 원유 공급에 지속적으로 영향을 주고 있습니다. 휘발유 국내 재고의 MSO 초과분이 매우 얇습니다(+0.1일). 3월 23~29일 선박 일정에 휘발유 1척만 확인되며 경유·항공유 부재 — 3월 25일 MBIE 업데이트가 중요합니다.">The Strait of Hormuz disruption continues to affect crude supply to Asian refineries. Onshore petrol buffer above MSO is thin (+0.1d). The Mar 23–29 vessel window shows only 1 petrol cargo with no diesel or jet fuel — a critical gap to monitor as MBIE updates data on 25 March.</p>
-      </div>
-      <div class="assess-card">
-        <h4 data-t="global_ctx" data-en="Global Context" data-ko="글로벌 맥락">Global Context</h4>
-        <p data-t="global_ctx_txt" data-en="IEA activated 400M bbl collective action on 11 March 2026. NZ fulfilled obligations via oil tickets. Brent crude has stabilised around US$88/bbl after peaking near US$120. Retail petrol in NZ has risen ~55 cents/litre and diesel ~90 cents/litre since the conflict began. No stockpiling behaviour observed." data-ko="IEA는 2026년 3월 11일 4억 배럴 공동조치를 발동했고, 뉴질랜드는 오일 티켓으로 의무를 이행했습니다. 브렌트유는 120달러 근처에서 급등 후 88달러 선에서 안정되었습니다. 분쟁 이후 NZ 휘발유는 리터당 약 55센트, 경유는 약 90센트 상승했습니다.">IEA activated 400M bbl collective action on 11 March 2026. NZ fulfilled obligations via oil tickets. Brent crude has stabilised around US$88/bbl after peaking near US$120. Retail petrol in NZ has risen ~55 cents/litre and diesel ~90 cents/litre since the conflict began. No stockpiling behaviour observed.</p>
-      </div>
+      <iframe src="https://tradingeconomics.com/commodity/crude-oil" width="100%" height="540" frameborder="0" scrolling="yes" allowfullscreen></iframe>
     </div>
   </div>
 
@@ -890,7 +782,7 @@ footer a { color: var(--accent); text-decoration: none; }
 <footer>
   Data source: <a href="https://www.mbie.govt.nz/building-and-energy/energy-and-natural-resources/energy-generation-and-markets/liquid-fuel-market/fuel-supply-disruption-response/middle-east-conflict-and-new-zealands-fuel-stocks" target="_blank">MBIE</a> | 
   Fuel prices: <a href="https://www.gaspy.nz" target="_blank">Gaspy</a> | 
-  v2.0 — Built 23 Mar 2026
+  v2.1 — Built 25 Mar 2026
 </footer>
 
 <script>
@@ -903,294 +795,6 @@ function toggleLang() {
     el.textContent = currentLang === 'en' ? el.dataset.en : el.dataset.ko;
   });
 }
-
-// ENERGY PRICE DATA — hardcoded from market closes Mar 17–21 + Mar 23 2026
-// Sources: Investing.com, Barchart, OilPrice.com, EIA
-// Sources: Barchart, EIA STEO (Mar 10 2026), Investing.com, oilprice.com
-// WTI 52-wk: $54.98–$113.41 | Brent $94/bbl Mar 9 (EIA) | conflict drove surge Feb→Mar
-const PRICE_DATA = {
-  '1wk': [
-    { ticker:'CL=F', name:'WTI Crude',     unit:'USD/bbl', points:[
-      {date:'17 Mar', price:93.42},{date:'18 Mar', price:108.78},
-      {date:'19 Mar', price:104.31},{date:'20 Mar', price:95.87},
-      {date:'21 Mar', price:96.14},{date:'23 Mar', price:98.32},
-    ]},
-    { ticker:'BZ=F', name:'Brent Crude',   unit:'USD/bbl', points:[
-      {date:'17 Mar', price:99.50},{date:'18 Mar', price:115.20},
-      {date:'19 Mar', price:110.40},{date:'20 Mar', price:102.20},
-      {date:'21 Mar', price:102.87},{date:'23 Mar', price:106.41},
-    ]},
-    { ticker:'RB=F', name:'RBOB Gasoline', unit:'USD/gal', points:[
-      {date:'17 Mar', price:3.044},{date:'18 Mar', price:3.280},
-      {date:'19 Mar', price:3.155},{date:'20 Mar', price:2.965},
-      {date:'21 Mar', price:3.124},{date:'23 Mar', price:3.210},
-    ]},
-    { ticker:'HO=F', name:'Heating Oil',   unit:'USD/gal', points:[
-      {date:'17 Mar', price:2.98},{date:'18 Mar', price:3.21},
-      {date:'19 Mar', price:3.09},{date:'20 Mar', price:2.95},
-      {date:'21 Mar', price:3.09},{date:'23 Mar', price:3.14},
-    ]},
-    { ticker:'NG=F', name:'Natural Gas',   unit:'USD/MMBtu', points:[
-      {date:'17 Mar', price:3.131},{date:'18 Mar', price:3.070},
-      {date:'19 Mar', price:3.176},{date:'20 Mar', price:3.135},
-      {date:'21 Mar', price:3.135},{date:'23 Mar', price:3.064},
-    ]},
-  ],
-  '4wk': [
-    { ticker:'CL=F', name:'WTI Crude',     unit:'USD/bbl', points:[
-      {date:'24 Feb', price:71.20},{date:'25 Feb', price:69.85},
-      {date:'26 Feb', price:68.40},{date:'27 Feb', price:70.10},
-      {date:'28 Feb', price:71.55},{date:'03 Mar', price:78.30},
-      {date:'04 Mar', price:82.60},{date:'05 Mar', price:85.40},
-      {date:'06 Mar', price:88.90},{date:'07 Mar', price:91.20},
-      {date:'10 Mar', price:89.50},{date:'11 Mar', price:92.30},
-      {date:'12 Mar', price:90.80},{date:'13 Mar', price:93.39},
-      {date:'14 Mar', price:93.90},{date:'17 Mar', price:93.42},
-      {date:'18 Mar', price:108.78},{date:'19 Mar', price:104.31},
-      {date:'20 Mar', price:95.87},{date:'21 Mar', price:96.14},
-      {date:'23 Mar', price:98.32},
-    ]},
-    { ticker:'BZ=F', name:'Brent Crude',   unit:'USD/bbl', points:[
-      {date:'24 Feb', price:75.40},{date:'25 Feb', price:73.90},
-      {date:'26 Feb', price:72.50},{date:'27 Feb', price:74.20},
-      {date:'28 Feb', price:75.80},{date:'03 Mar', price:83.10},
-      {date:'04 Mar', price:87.40},{date:'05 Mar', price:90.20},
-      {date:'06 Mar', price:93.80},{date:'07 Mar', price:96.50},
-      {date:'10 Mar', price:94.00},{date:'11 Mar', price:97.10},
-      {date:'12 Mar', price:95.60},{date:'13 Mar', price:98.20},
-      {date:'14 Mar', price:98.90},{date:'17 Mar', price:99.50},
-      {date:'18 Mar', price:115.20},{date:'19 Mar', price:110.40},
-      {date:'20 Mar', price:102.20},{date:'21 Mar', price:102.87},
-      {date:'23 Mar', price:106.41},
-    ]},
-    { ticker:'RB=F', name:'RBOB Gasoline', unit:'USD/gal', points:[
-      {date:'24 Feb', price:2.210},{date:'25 Feb', price:2.180},
-      {date:'26 Feb', price:2.155},{date:'27 Feb', price:2.195},
-      {date:'28 Feb', price:2.230},{date:'03 Mar', price:2.450},
-      {date:'04 Mar', price:2.580},{date:'05 Mar', price:2.660},
-      {date:'06 Mar', price:2.780},{date:'07 Mar', price:2.850},
-      {date:'10 Mar', price:2.790},{date:'11 Mar', price:2.880},
-      {date:'12 Mar', price:2.840},{date:'13 Mar', price:2.920},
-      {date:'14 Mar', price:2.970},{date:'17 Mar', price:3.044},
-      {date:'18 Mar', price:3.280},{date:'19 Mar', price:3.155},
-      {date:'20 Mar', price:2.965},{date:'21 Mar', price:3.124},
-      {date:'23 Mar', price:3.210},
-    ]},
-    { ticker:'HO=F', name:'Heating Oil',   unit:'USD/gal', points:[
-      {date:'24 Feb', price:2.18},{date:'25 Feb', price:2.14},
-      {date:'26 Feb', price:2.11},{date:'27 Feb', price:2.16},
-      {date:'28 Feb', price:2.20},{date:'03 Mar', price:2.41},
-      {date:'04 Mar', price:2.53},{date:'05 Mar', price:2.61},
-      {date:'06 Mar', price:2.72},{date:'07 Mar', price:2.79},
-      {date:'10 Mar', price:2.74},{date:'11 Mar', price:2.82},
-      {date:'12 Mar', price:2.78},{date:'13 Mar', price:2.86},
-      {date:'14 Mar', price:2.91},{date:'17 Mar', price:2.98},
-      {date:'18 Mar', price:3.21},{date:'19 Mar', price:3.09},
-      {date:'20 Mar', price:2.95},{date:'21 Mar', price:3.09},
-      {date:'23 Mar', price:3.14},
-    ]},
-    { ticker:'NG=F', name:'Natural Gas',   unit:'USD/MMBtu', points:[
-      {date:'24 Feb', price:3.580},{date:'25 Feb', price:3.510},
-      {date:'26 Feb', price:3.440},{date:'27 Feb', price:3.390},
-      {date:'28 Feb', price:3.320},{date:'03 Mar', price:3.280},
-      {date:'04 Mar', price:3.350},{date:'05 Mar', price:3.290},
-      {date:'06 Mar', price:3.310},{date:'07 Mar', price:3.260},
-      {date:'10 Mar', price:3.200},{date:'11 Mar', price:3.180},
-      {date:'12 Mar', price:3.150},{date:'13 Mar', price:3.140},
-      {date:'14 Mar', price:3.110},{date:'17 Mar', price:3.131},
-      {date:'18 Mar', price:3.070},{date:'19 Mar', price:3.176},
-      {date:'20 Mar', price:3.135},{date:'21 Mar', price:3.135},
-      {date:'23 Mar', price:3.064},
-    ]},
-  ],
-  '3mo': [
-    { ticker:'CL=F', name:'WTI Crude',     unit:'USD/bbl', points:[
-      {date:'29 Dec', price:70.61},{date:'05 Jan', price:73.92},
-      {date:'12 Jan', price:76.50},{date:'19 Jan', price:74.80},
-      {date:'26 Jan', price:72.30},{date:'02 Feb', price:68.90},
-      {date:'09 Feb', price:63.50},{date:'16 Feb', price:64.20},
-      {date:'23 Feb', price:69.40},{date:'02 Mar', price:80.10},
-      {date:'09 Mar', price:91.20},{date:'16 Mar', price:93.39},
-      {date:'23 Mar', price:98.32},
-    ]},
-    { ticker:'BZ=F', name:'Brent Crude',   unit:'USD/bbl', points:[
-      {date:'29 Dec', price:74.40},{date:'05 Jan', price:77.80},
-      {date:'12 Jan', price:80.20},{date:'19 Jan', price:78.50},
-      {date:'26 Jan', price:76.10},{date:'02 Feb', price:72.80},
-      {date:'09 Feb', price:67.40},{date:'16 Feb', price:68.20},
-      {date:'23 Feb', price:73.60},{date:'02 Mar', price:84.90},
-      {date:'09 Mar', price:96.50},{date:'16 Mar', price:98.90},
-      {date:'23 Mar', price:106.41},
-    ]},
-    { ticker:'RB=F', name:'RBOB Gasoline', unit:'USD/gal', points:[
-      {date:'29 Dec', price:1.920},{date:'05 Jan', price:2.010},
-      {date:'12 Jan', price:2.090},{date:'19 Jan', price:2.050},
-      {date:'26 Jan', price:1.980},{date:'02 Feb', price:1.910},
-      {date:'09 Feb', price:1.840},{date:'16 Feb', price:1.890},
-      {date:'23 Feb', price:2.120},{date:'02 Mar', price:2.450},
-      {date:'09 Mar', price:2.850},{date:'16 Mar', price:2.970},
-      {date:'23 Mar', price:3.210},
-    ]},
-    { ticker:'HO=F', name:'Heating Oil',   unit:'USD/gal', points:[
-      {date:'29 Dec', price:2.470},{date:'05 Jan', price:2.530},
-      {date:'12 Jan', price:2.590},{date:'19 Jan', price:2.550},
-      {date:'26 Jan', price:2.490},{date:'02 Feb', price:2.380},
-      {date:'09 Feb', price:2.210},{date:'16 Feb', price:2.240},
-      {date:'23 Feb', price:2.410},{date:'02 Mar', price:2.630},
-      {date:'09 Mar', price:2.790},{date:'16 Mar', price:2.910},
-      {date:'23 Mar', price:3.140},
-    ]},
-    { ticker:'NG=F', name:'Natural Gas',   unit:'USD/MMBtu', points:[
-      {date:'29 Dec', price:3.610},{date:'05 Jan', price:3.820},
-      {date:'12 Jan', price:4.150},{date:'19 Jan', price:3.950},
-      {date:'26 Jan', price:3.720},{date:'02 Feb', price:3.580},
-      {date:'09 Feb', price:3.440},{date:'16 Feb', price:3.390},
-      {date:'23 Feb', price:3.520},{date:'02 Mar', price:3.350},
-      {date:'09 Mar', price:3.260},{date:'16 Mar', price:3.110},
-      {date:'23 Mar', price:3.064},
-    ]},
-  ],
-};
-
-let currentTF = '1wk';
-
-function loadAllPrices(tf) {
-  currentTF = tf || '1wk';
-  renderChartsStatic(currentTF);
-  if (currentTF === '1wk') populatePriceTableStatic();
-}
-
-function setTF(tf, btn) {
-  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  currentTF = tf;
-  renderChartsStatic(tf);
-}
-
-
-function renderChartsStatic(tf) {
-  tf = tf || '1wk';
-  const dataset = PRICE_DATA[tf];
-  const wrap = document.getElementById('chartsWrap');
-  wrap.innerHTML = '';
-  dataset.forEach((d, i) => {
-    const closes = d.points.map(p => p.price);
-    const dates  = d.points.map(p => p.date);
-    const cur  = closes[closes.length - 1];
-    const prev = closes[closes.length - 2];
-    const chg  = cur - prev;
-    const pct  = (chg / prev * 100);
-    const chgColor = chg >= 0 ? '#00e87a' : '#ff3d5a';
-    const chgSign  = chg >= 0 ? '+' : '';
-
-    const card = document.createElement('div');
-    card.className = 'chart-card';
-
-    const hdr = document.createElement('div');
-    hdr.className = 'chart-header';
-    hdr.innerHTML = `
-      <div>
-        <div class="chart-ticker">${d.ticker}</div>
-        <div class="chart-name">${d.name}</div>
-      </div>
-      <div style="text-align:right">
-        <div class="chart-price">${cur.toFixed(cur < 10 ? 3 : 2)}</div>
-        <div class="chart-change" style="color:${chgColor}">${chgSign}${chg.toFixed(cur < 10 ? 3 : 2)} (${chgSign}${pct.toFixed(2)}%)</div>
-      </div>`;
-    card.appendChild(hdr);
-
-    const tooltip = document.createElement('div');
-    tooltip.style.cssText = 'font-size:0.7rem;color:var(--text-muted);font-family:"Share Tech Mono",monospace;min-height:14px;margin-bottom:4px;';
-    card.appendChild(tooltip);
-
-    const svgWrap = document.createElement('div');
-    svgWrap.className = 'chart-svg-wrap';
-    svgWrap.style.cursor = 'crosshair';
-
-    const W = 260, H = 80, PAD = 4;
-    const n = closes.length;
-    const minV = Math.min(...closes);
-    const maxV = Math.max(...closes);
-    const rangeV = maxV - minV || 1;
-    const sx = j => PAD + (j / (n - 1)) * (W - 2 * PAD);
-    const sy = v => PAD + (1 - (v - minV) / rangeV) * (H - 2 * PAD);
-    const color = chg >= 0 ? '#00e87a' : '#ff3d5a';
-    const gradId = `g${i}`;
-    const pts = closes.map((v, j) => `${sx(j).toFixed(1)},${sy(v).toFixed(1)}`).join(' ');
-    const polyPts = `${sx(0).toFixed(1)},${H} ${pts} ${sx(n-1).toFixed(1)},${H}`;
-
-    let gridLines = '';
-    for (let j = 0; j < n; j++) {
-      gridLines += `<line x1="${sx(j).toFixed(1)}" y1="${PAD}" x2="${sx(j).toFixed(1)}" y2="${H - PAD}" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>`;
-    }
-
-    const NS = 'http://www.w3.org/2000/svg';
-    const svg = document.createElementNS(NS, 'svg');
-    svg.setAttribute('viewBox', `0 0 ${W} ${H}`);
-    svg.style.cssText = 'width:100%;height:100%;overflow:visible';
-    svg.innerHTML = `
-      <defs>
-        <linearGradient id="${gradId}" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%" stop-color="${color}" stop-opacity="0.3"/>
-          <stop offset="100%" stop-color="${color}" stop-opacity="0"/>
-        </linearGradient>
-      </defs>
-      ${gridLines}
-      <polygon points="${polyPts}" fill="url(#${gradId})"/>
-      <polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.8" stroke-linejoin="round"/>
-      <line id="ch-${i}" x1="0" y1="${PAD}" x2="0" y2="${H - PAD}" stroke="rgba(255,255,255,0.4)" stroke-width="1" stroke-dasharray="3,2" display="none"/>
-      <circle id="cd-${i}" r="3" fill="${color}" stroke="#0a0c0f" stroke-width="1.5" display="none"/>`;
-
-    svgWrap.appendChild(svg);
-    card.appendChild(svgWrap);
-    wrap.appendChild(card);
-
-    const chLine = svg.querySelector(`#ch-${i}`);
-    const chDot  = svg.querySelector(`#cd-${i}`);
-
-    svgWrap.addEventListener('mousemove', e => {
-      const rect = svgWrap.getBoundingClientRect();
-      const idx = Math.min(n - 1, Math.max(0, Math.round((e.clientX - rect.left) / rect.width * (n - 1))));
-      const xPos = sx(idx);
-      const yPos = sy(closes[idx]);
-      chLine.setAttribute('x1', xPos); chLine.setAttribute('x2', xPos); chLine.removeAttribute('display');
-      chDot.setAttribute('cx', xPos);  chDot.setAttribute('cy', yPos);  chDot.removeAttribute('display');
-      const dec = closes[idx] < 10 ? 3 : 2;
-      tooltip.textContent = `${dates[idx]}  —  ${closes[idx].toFixed(dec)} ${d.unit}`;
-    });
-    svgWrap.addEventListener('mouseleave', () => {
-      chLine.setAttribute('display', 'none');
-      chDot.setAttribute('display', 'none');
-      tooltip.textContent = '';
-    });
-  });
-}
-
-function populatePriceTableStatic() {
-  let html = '<table><thead><tr><th>Commodity</th><th>Price</th><th>Change</th><th>Unit</th></tr></thead><tbody>';
-  PRICE_DATA['1wk'].forEach(d => {
-    const closes = d.points.map(p => p.price);
-    const cur  = closes[closes.length - 1];
-    const prev = closes[closes.length - 2];
-    const chg  = cur - prev;
-    const pct  = (chg / prev * 100);
-    const cls  = chg >= 0 ? 'price-up' : 'price-dn';
-    const sign = chg >= 0 ? '+' : '';
-    const dec  = cur < 10 ? 3 : 2;
-    html += `<tr>
-      <td>${d.name}</td>
-      <td style="font-family:'Share Tech Mono',monospace">${cur.toFixed(dec)}</td>
-      <td class="${cls}">${sign}${chg.toFixed(dec)} (${sign}${pct.toFixed(2)}%)</td>
-      <td style="color:var(--text-muted)">${d.unit}</td>
-    </tr>`;
-  });
-  html += '</tbody></table>';
-  html += '<div style="font-size:0.7rem;color:var(--text-muted);margin-top:8px;font-family:\'Share Tech Mono\',monospace">Data: Mar 17–23, 2026 · Sources: Investing.com, Barchart, EIA</div>';
-  document.getElementById('priceTable').innerHTML = html;
-}
-
-// INIT
-loadAllPrices('1wk');
 </script>
 </body>
 </html>
