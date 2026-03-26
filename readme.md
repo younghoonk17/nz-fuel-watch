@@ -45,6 +45,7 @@ Tracks and visualises NZ's fuel stock levels (petrol, diesel, jet fuel) during s
 ```
 nz-fuel-watch/
 ├── index.html          # Main dashboard (all-in-one file)
+├── 27March.html        # Snapshot archive (27 March 2026)
 ├── 15March.html        # Snapshot archive (15 March 2026)
 ├── ads.txt             # AdSense verification
 ├── CNAME               # GitHub Pages custom domain
@@ -61,7 +62,7 @@ When MBIE publishes new data (typically weekly on Wednesdays):
 ### 1. Update Header
 ```html
 <!-- Header updated date -->
-<span data-t="updated" data-en="Updated: 25 Mar 2026" data-ko="업데이트: 2026 년 3 월 25 일">
+<span data-t="updated" data-en="Updated: 27 Mar 2026" data-ko="업데이트: 2026 년 3 월 27 일">
 
 <!-- Phase badge -->
 <span class="phase-badge">PHASE 1 — MINOR</span>
@@ -96,13 +97,13 @@ When MBIE publishes new data (typically weekly on Wednesdays):
 ```html
 <!-- Full Stock Breakdown table -->
 <tr class="row-onshore"><td>Onshore</td><td>24.5d</td><td>18.1d</td><td>20.1d</td></tr>
-<tr class="row-onwater"><td>On-water</td><td>24.2d</td><td>28.3d</td><td>23.4d</td></tr>
-<tr class="row-total"><td>Total</td><td>48.7d</td><td>46.4d</td><td>43.4d</td></tr>
+<tr class="row-onwater"><td>On-water</td><td>24.2d</td><td>28.3d</td><td>33.3d</td></tr>
+<tr class="row-total"><td>Total</td><td>48.7d</td><td>46.4d</td><td>53.4d</td></tr>
 <tr class="row-mso"><td>MSO Min.</td><td>28d</td><td>21d</td><td>24d</td></tr>
 <tr class="row-buffer"><td>Buffer</td><td style="color:var(--red)">-3.5d</td><td style="color:var(--red)">-2.9d</td><td style="color:var(--red)">-3.9d</td></tr>
 
 <!-- Vessels table -->
-<tr class="row-vessel"><td>Mar 23–29</td><td>1</td><td>4.4d</td><td>0d</td><td>2d</td></tr>
+<tr class="row-vessel"><td>Mar 23–29</td><td>1</td><td>0d</td><td>4.2d</td><td>0d</td></tr>
 ```
 
 ### 6. Update Status Panel
@@ -123,13 +124,13 @@ When MBIE publishes new data (typically weekly on Wednesdays):
 
 ### 8. Update Footer
 ```html
-v2.1 — Built 25 Mar 2026
+v2.2 — Built 27 Mar 2026
 ```
 
 ### 9. Commit & Deploy
 ```bash
 git add index.html
-git commit -m "Update: 25 Mar 2026 — MBIE weekly data"
+git commit -m "Update: 27 Mar 2026 — MBIE weekly data"
 git push
 # GitHub Pages auto-deploys
 ```
@@ -164,5 +165,5 @@ MIT — Built for public service during national emergencies.
 
 ---
 
-**Last Updated:** 25 March 2026  
-**Version:** 2.1
+**Last Updated:** 27 March 2026  
+**Version:** 2.2
