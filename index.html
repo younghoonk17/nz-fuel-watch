@@ -101,43 +101,6 @@ header {
 }
 #langToggle:hover { background: var(--border2); }
 
-/* TICKER */
-.ticker-wrap {
-  background: linear-gradient(90deg, #001a0d, #002211, #001a0d);
-  border-bottom: 1px solid var(--green);
-  padding: 8px 0;
-  overflow: hidden;
-  white-space: nowrap;
-}
-.ticker-inner {
-  display: inline-flex;
-  animation: ticker 40s linear infinite;
-}
-@keyframes ticker {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
-}
-.ticker-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0 28px;
-  font-family: 'Share Tech Mono', monospace;
-  font-size: 0.82rem;
-  color: #ffffff;
-}
-.live-badge {
-  background: var(--green);
-  color: #000;
-  padding: 1px 7px;
-  border-radius: 3px;
-  font-weight: 700;
-  font-size: 0.7rem;
-  letter-spacing: 1px;
-  margin-right: 8px;
-}
-.sep { color: var(--border2); }
-
 /* MAIN CONTENT */
 .container { max-width: 1280px; margin: 0 auto; padding: 24px 20px; }
 .section { margin-bottom: 20px; }
@@ -475,41 +438,6 @@ footer a { color: var(--accent); text-decoration: none; }
     <span class="phase-badge">PHASE 1 — MINOR</span>
   </div>
 </header>
-
-<!-- TICKER -->
-<div class="ticker-wrap">
-  <div class="ticker-inner" id="tickerInner">
-    <span class="ticker-item">
-      <span class="live-badge">LIVE</span>
-      <span data-t="t1" data-en="⛽ Petrol: 48.7d total (onshore + on-water)" data-ko="⛽ 휘발유: 총 48.7일 (국내 + 해상)">⛽ Petrol: 48.7d total (onshore + on-water)</span>
-      <span class="sep">|</span>
-      <span data-t="t2" data-en="🚛 Diesel: 46.4d total (onshore + on-water)" data-ko="🚛 경유: 총 46.4일 (국내 + 해상)">🚛 Diesel: 46.4d total (onshore + on-water)</span>
-      <span class="sep">|</span>
-      <span data-t="t3" data-en="✈️ Jet Fuel: 53.4d total (onshore + on-water)" data-ko="✈️ 항공유: 총 53.4일 (국내 + 해상)">✈️ Jet Fuel: 53.4d total (onshore + on-water)</span>
-      <span class="sep">|</span>
-      <span data-t="t4" data-en="📦 Combined total: ~48.6d nationwide" data-ko="📦 전체 합산: 전국 약 48.6일">📦 Combined total: ~48.6d nationwide</span>
-      <span class="sep">|</span>
-      <span data-t="t5" data-en="🚢 13 vessels underway — 6 discharging (19.8d petrol, 11.6d diesel, 11.7d jet) | 7 on track to arrive by Apr 12" data-ko="🚢 선박 13척 이동 중 — 6척 하역 중 (휘발유 19.8일, 경유 11.6일, 항공유 11.7일) | 7척 4월 12일까지 입항 예정">🚢 13 vessels underway — 6 discharging (19.8d petrol, 11.6d diesel, 11.7d jet) | 7 on track to arrive by Apr 12</span>
-      <span class="sep">|</span>
-      <span data-t="t7" data-en="📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓" data-ko="📍 MSO 기준: 휘발유 28일 ✓ | 경유 21일 ✓ | 항공유 24일 ✓">📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓</span>
-    </span>
-    <!-- duplicate for seamless loop -->
-    <span class="ticker-item">
-      <span class="live-badge">LIVE</span>
-      <span data-t="t1" data-en="⛽ Petrol: 48.7d total (onshore + on-water)" data-ko="⛽ 휘발유: 총 48.7일 (국내 + 해상)">⛽ Petrol: 48.7d total (onshore + on-water)</span>
-      <span class="sep">|</span>
-      <span data-t="t2" data-en="🚛 Diesel: 46.4d total (onshore + on-water)" data-ko="🚛 경유: 총 46.4일 (국내 + 해상)">🚛 Diesel: 46.4d total (onshore + on-water)</span>
-      <span class="sep">|</span>
-      <span data-t="t3" data-en="✈️ Jet Fuel: 53.4d total (onshore + on-water)" data-ko="✈️ 항공유: 총 53.4일 (국내 + 해상)">✈️ Jet Fuel: 53.4d total (onshore + on-water)</span>
-      <span class="sep">|</span>
-      <span data-t="t4" data-en="📦 Combined total: ~48.6d nationwide" data-ko="📦 전체 합산: 전국 약 48.6일">📦 Combined total: ~48.6d nationwide</span>
-      <span class="sep">|</span>
-      <span data-t="t5" data-en="🚢 13 vessels underway — 6 discharging (19.8d petrol, 11.6d diesel, 11.7d jet) | 7 on track to arrive by Apr 12" data-ko="🚢 선박 13척 이동 중 — 6척 하역 중 (휘발유 19.8일, 경유 11.6일, 항공유 11.7일) | 7척 4월 12일까지 입항 예정">🚢 13 vessels underway — 6 discharging (19.8d petrol, 11.6d diesel, 11.7d jet) | 7 on track to arrive by Apr 12</span>
-      <span class="sep">|</span>
-      <span data-t="t7" data-en="📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓" data-ko="📍 MSO 기준: 휘발유 28일 ✓ | 경유 21일 ✓ | 항공유 24일 ✓">📍 MSO: Petrol 28d ✓ | Diesel 21d ✓ | Jet Fuel 24d ✓</span>
-    </span>
-  </div>
-</div>
 
 <div class="container">
 
